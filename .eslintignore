@@ -1,0 +1,6 @@
+.eslintrc.js
+/build
+/node_modules
+setupTests.js
+setupProxy.js
+/config

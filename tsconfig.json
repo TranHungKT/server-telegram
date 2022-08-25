@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "rootDir": "./",
+      "outDir": "./build",
+      "esModuleInterop": true,
+      "strict": true,
+      "allowJs": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": false,
+      "baseUrl": "./",
+      "paths": {
+        "@Configs": ["src/configs"],
+        "@Constants": ["src/constants"],
+        "@Controllers/*": ["src/controllers/*"],
+        "@Middlewares": ["src/middlewares"],
+        "@Models": ["src/models"],
+        "@Queues": ["src/queues"],
+        "@Routes": ["src/routes"],
+        "@Schemas": ["src/schemas"],
+        "@Services": ["src/services"],
+        "@Utils": ["src/utils"],
+      }
+  },
+}

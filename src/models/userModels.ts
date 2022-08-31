@@ -15,3 +15,8 @@ export interface LoginUserDataWithObjectId extends LoginUserData {
 export interface RequestUserAfterAuthenticate extends Request {
   user: LoginUserDataWithObjectId
 }
+
+export enum UserStatus {
+  OFFLINE = 'OFFLINE',
+  ONLINE = 'ONLINE',
+}

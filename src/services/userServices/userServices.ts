@@ -1,5 +1,5 @@
-import { IUser, UserModel } from '@Models'
-import { ConflictDatabaseError } from '@Utils'
+import { IUser, SchemaWithId, UserModel } from '@Models'
+import { ConflictDatabaseError, DatabaseError } from '@Utils'
 import { AddGroupIdToListUserPayload, IUserService } from './useServiceModels'
 
 class DefaultUserService implements IUserService {
@@ -35,6 +35,14 @@ class DefaultUserService implements IUserService {
         user.save()
       }),
     )
+  }
+
+  async createNewUser(newUserData: IUser): Promise<SchemaWithId<IUser>> {
+    try {
+      return await new UserModel(newUserData).save()
+    } catch (error) {
+      throw new DatabaseError()
+    }
   }
 }
 

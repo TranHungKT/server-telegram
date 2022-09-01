@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import strategy from 'passport-facebook'
 import { IUser, SchemaWithId, UserModel, UserStatus } from '@Models'
 import { generateAndSaveTokenToRedis } from '../../utils/generateToken'
+import { userService } from '@Services'
 
 const FacebookStrategy = strategy.Strategy
 
@@ -45,7 +46,7 @@ passport.use(
 
       user = await UserModel.findOne({ email })
       if (!user) {
-        user = await new UserModel(userData).save()
+        user = await userService.createNewUser(userData)
       }
 
       done(null, { ...userData, id: user._id })

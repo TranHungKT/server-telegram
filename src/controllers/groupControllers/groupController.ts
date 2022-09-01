@@ -1,6 +1,6 @@
 // How to create an group
 // Require: There is at least 2 members.
-// Validate:
+// Step to do:
 // Step 1: There is no group have the same number of member and same ids.
 // Step 2: Can not have same ids in req.body
 // Step 3: All Ids are valid.
@@ -16,7 +16,7 @@ import {
 } from './helpers/schemas'
 import { generateNameOfGroup } from './helpers/utils'
 import { isListOfMemebersConflict } from './helpers/validates'
-import { GroupModel, IGroup, TypeOfGroup } from '@Models'
+import { IGroup, TypeOfGroup } from '@Models'
 import { groupServices, userService } from '@Services'
 export const createNewGroupController = async (
   req: Request<{}, {}, CreateNewGroupPayload>,
@@ -50,7 +50,7 @@ export const createNewGroupController = async (
     }
 
     // Step 5
-    const newGroupAfterCreation = await new GroupModel(newGroup).save()
+    const newGroupAfterCreation = await groupServices.createNewGroup(newGroup)
 
     // Step 6
     await userService.addGroupIdToListUser({

@@ -1,9 +1,12 @@
-export interface IsGroupdUnExistProps {
+import { IGroup, SchemaWithId } from '@Models'
+
+export interface ValidateGroupExistPayload {
   ids: string[]
   shouldThrowErrorWhenExist: boolean
   message?: string
 }
 
 export interface IGroupService {
-  validateGroupExist(payload: IsGroupdUnExistProps): Promise<void>
+  validateGroupExist(payload: ValidateGroupExistPayload): Promise<void>
+  createNewGroup(newGroupData: IGroup): Promise<SchemaWithId<IGroup>>
 }

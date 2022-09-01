@@ -1,6 +1,6 @@
-import { GroupModel } from '@Models'
-import { ConflictDatabaseError } from '@Utils'
-import { IGroupService, IsGroupdUnExistProps } from './groupServiceModels'
+import { GroupModel, IGroup, SchemaWithId } from '@Models'
+import { ConflictDatabaseError, DatabaseError } from '@Utils'
+import { IGroupService, ValidateGroupExistPayload } from './groupServiceModels'
 
 class DefaultGroupService implements IGroupService {
   constructor() {}
@@ -9,12 +9,20 @@ class DefaultGroupService implements IGroupService {
     ids,
     shouldThrowErrorWhenExist,
     message = 'This Group Already Exist',
-  }: IsGroupdUnExistProps): Promise<void> {
+  }: ValidateGroupExistPayload): Promise<void> {
     const response = await GroupModel.find({
       memberIds: ids,
     })
     if (!!response.length === shouldThrowErrorWhenExist) {
       throw new ConflictDatabaseError(message)
+    }
+  }
+
+  async createNewGroup(newGroupData: IGroup): Promise<SchemaWithId<IGroup>> {
+    try {
+      return await new GroupModel(newGroupData).save()
+    } catch (error) {
+      throw new DatabaseError()
     }
   }
 }

@@ -1,3 +1,4 @@
+import { USER_REDIS_KEY, OAUTH_TYPE } from '@Constants'
 import jwt from 'jsonwebtoken'
 
 // TODO: MAKE TOKEN_ERROR
@@ -7,7 +8,6 @@ import { setRedisValue } from './redisActions'
 interface PayloadToken {
   email: string
 }
-const USER_REDIS_KEY = '_USER_REDIS_KEY'
 
 export const decodeOTPToken = (token: string) => {
   try {
@@ -44,18 +44,15 @@ export const decodeRefreshToken = (token: string): PayloadToken => {
   }
 }
 
-export const generateAndSaveTokenToRedis = (payload: {
-  email: string
+export const saveTokenToRedis = (payload: {
   accessToken: string
-  refreshToken: string
-  type: string
-}): { accessToken: string; refreshToken: string } => {
-  const { email, refreshToken, accessToken, type } = payload
+}): { accessToken: string } => {
+  const { accessToken } = payload
 
   setRedisValue(
-    email + type + USER_REDIS_KEY,
-    JSON.stringify({ accessToken, refreshToken }),
+    accessToken + OAUTH_TYPE + USER_REDIS_KEY,
+    JSON.stringify({ accessToken }),
   )
 
-  return { accessToken, refreshToken }
+  return { accessToken }
 }

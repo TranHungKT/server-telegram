@@ -2,7 +2,7 @@ import passport from 'passport'
 import dotenv from 'dotenv'
 import strategy from 'passport-facebook'
 import { IUser, SchemaWithId, UserModel, UserStatus } from '@Models'
-import { generateAndSaveTokenToRedis } from '../../utils/generateToken'
+import { saveTokenToRedis } from '../../utils/generateToken'
 import { userService } from '@Services'
 
 const FacebookStrategy = strategy.Strategy
@@ -35,13 +35,11 @@ passport.use(
         avatarUrl: picture.data.url,
         groupUserBelongTo: [],
       }
-
-      generateAndSaveTokenToRedis({
-        email,
-        type: 'OAUTH',
+      console.log(accessToken)
+      saveTokenToRedis({
         accessToken,
-        refreshToken,
       })
+
       let user: SchemaWithId<IUser> | null
 
       user = await UserModel.findOne({ email })

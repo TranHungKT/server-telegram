@@ -22,7 +22,7 @@ module.exports = {
 
     // ESLint rules
     'arrow-parens': ['off', 'as-needed'],
-    'arrow-body-style': ['error', 'as-needed'],
+    'arrow-body-style': ['off', 'as-needed'],
     'no-console': ['off', { allow: ['warn', 'error'] }],
     'no-unused-vars': 'off',
     '@typescript-eslint/no-explicit-any': 'off',

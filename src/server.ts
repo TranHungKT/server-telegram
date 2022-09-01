@@ -32,7 +32,7 @@ app.use((error: Error, req: Request, res: Response, _: NextFunction) => {
   if (error instanceof CustomError) {
     return res.status(error.statusCode).send({ error: error.serializeErrors() })
   }
-  console.log(error)
+
   return res.status(400).send({
     error: [
       {

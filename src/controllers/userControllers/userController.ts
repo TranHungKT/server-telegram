@@ -1,8 +1,9 @@
 import passport from 'passport'
 import dotenv from 'dotenv'
 import strategy from 'passport-facebook'
-import { IUser, SchemaWithId, UserModel, LoginUserData } from '@Models'
+import { IUser, SchemaWithId, UserModel, UserStatus } from '@Models'
 import { generateAndSaveTokenToRedis } from '../../utils/generateToken'
+import { userService } from '@Services'
 
 const FacebookStrategy = strategy.Strategy
 
@@ -24,13 +25,15 @@ passport.use(
       profileFields: ['email', 'displayName', 'id', 'name', 'photos'],
     },
     async function (accessToken, refreshToken, profile, done) {
-      console.log(profile._json)
-      const { email, first_name, last_name } = profile._json
-      const userData: LoginUserData = {
+      const { email, first_name, last_name, picture } = profile._json
+
+      const userData: IUser = {
         email,
         firstName: first_name,
         lastName: last_name,
-        accessToken,
+        status: UserStatus.ONLINE,
+        avatarUrl: picture.data.url,
+        groupUserBelongTo: [],
       }
 
       generateAndSaveTokenToRedis({
@@ -43,7 +46,7 @@ passport.use(
 
       user = await UserModel.findOne({ email })
       if (!user) {
-        user = await new UserModel(userData).save()
+        user = await userService.createNewUser(userData)
       }
 
       done(null, { ...userData, id: user._id })

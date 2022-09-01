@@ -1,1 +1,0 @@
-export { adminOrganisationService } from './adminOrganisationServices'

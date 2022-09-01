@@ -1,16 +1,15 @@
 import { Schema } from 'mongoose'
+import { UserStatus, IUser } from '@Models'
 
-export const UserSchema = new Schema({
-  email: {
+export const UserSchema = new Schema<IUser>({
+  email: String,
+  firstName: String,
+  lastName: String,
+  avatarUrl: String,
+  groupUserBelongTo: [String],
+  status: {
     type: String,
-    required: true,
-  },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
+    enum: UserStatus,
     required: true,
   },
 })

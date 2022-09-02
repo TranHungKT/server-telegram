@@ -1,6 +1,15 @@
-import { OAUTH_TYPE, USER_REDIS_KEY, UNAUTHORIZED_MESSAGE } from '@Constants'
-import { APIError, getRedisValue } from '@Utils'
-import { NextFunction, Request, Response } from 'express'
+// How to validate
+// Require: AccessToken need to be attached in authorization header of request
+// Step to do:
+// Step 1: If token undefined, return Unauthozied
+// Step 2: Get userData from facebook API with accessToken
+// Step 3: Use the id from facebook to get data in our database
+// Step 4: Attach user data into req.user
+
+import { UNAUTHORIZED_MESSAGE } from '@Constants'
+import { APIError } from '@Utils'
+import { NextFunction, Response, Request } from 'express'
+import { facebookServices, userService } from '@Services'
 
 export const verifyTokenMiddlewares = async (
   req: Request,
@@ -14,19 +23,13 @@ export const verifyTokenMiddlewares = async (
       throw new APIError(UNAUTHORIZED_MESSAGE)
     }
 
-    await getRedisValue(
-      token + OAUTH_TYPE + USER_REDIS_KEY,
-      (accessToken, error) => {
-        if (error) {
-          return next(new APIError(UNAUTHORIZED_MESSAGE))
-        }
-        if (token === accessToken) {
-          return next()
-        }
+    const { id } = await facebookServices.getUserData(token)
 
-        return next(new APIError(UNAUTHORIZED_MESSAGE))
-      },
-    )
+    const user = await userService.findUserByOAuthId(id)
+
+    req.user = user
+
+    return next()
   } catch (error) {
     next(error)
   }

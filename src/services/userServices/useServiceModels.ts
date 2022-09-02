@@ -9,4 +9,5 @@ export interface IUserService {
   createNewUser(newUserData: IUser): Promise<SchemaWithId<IUser>>
   findUsersByIds(ids: string[]): Promise<IUser[]>
   addGroupIdToListUser(payload: AddGroupIdToListUserPayload): Promise<void>
+  findUserByOAuthId(id: string): Promise<IUser>
 }

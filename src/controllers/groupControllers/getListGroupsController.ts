@@ -3,9 +3,9 @@
 // Step 1: it need to pass validate token
 // Step 2: Use ObjectId from req.user and query for list of groups, using groups belong to
 // Step 3: Return list of group with the following response type
-//  {
-// count: number,
-// list: IGroup[]
+// {
+//   count: number,
+//   list: IGroup[]
 // }
 
 import { IUser, SchemaWithId } from '@Models'

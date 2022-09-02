@@ -1,11 +1,6 @@
 import redisClient from '../redis'
 import { DatabaseError } from '../utils/'
 
-export interface IRedisValue {
-  accessToken?: string
-  refreshToken?: string
-}
-
 export const setRedisValue = (key: string, value: string) => {
   try {
     redisClient.set(key, value)
@@ -16,17 +11,13 @@ export const setRedisValue = (key: string, value: string) => {
 
 export const getRedisValue = async (
   key: string,
-  callback: (value: IRedisValue) => void,
+  callback: (value: string, error: boolean) => void,
 ) => {
-  try {
-    redisClient.get(key, (err, value) => {
-      if (err) {
-        throw new DatabaseError()
-      }
+  redisClient.get(key, (err, value) => {
+    if (err || !value) {
+      return callback('', true)
+    }
 
-      return callback(JSON.parse(value || ''))
-    })
-  } catch (error) {
-    throw new DatabaseError()
-  }
+    return callback(JSON.parse(value).accessToken, false)
+  })
 }

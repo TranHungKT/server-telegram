@@ -1,6 +1,6 @@
-import { IUser } from '@Models'
+import { IUser, SchemaWithId } from '@Models'
 declare namespace Express {
   export interface Request {
-    user: IUser
+    user: SchemaWithId<IUser>
   }
 }

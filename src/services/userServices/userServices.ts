@@ -45,7 +45,7 @@ class DefaultUserService implements IUserService {
     }
   }
 
-  async findUserByOAuthId(id: string): Promise<IUser> {
+  async findUserByOAuthId(id: string): Promise<SchemaWithId<IUser>> {
     const user = await UserModel.findOne({ oAuthId: id })
 
     if (!user) {

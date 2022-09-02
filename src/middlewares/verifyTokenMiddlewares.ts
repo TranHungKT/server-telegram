@@ -23,9 +23,9 @@ export const verifyTokenMiddlewares = async (
       throw new APIError(UNAUTHORIZED_MESSAGE)
     }
 
-    const userDataFromFacebook = await facebookServices.getUserData(token)
+    const { id } = await facebookServices.getUserData(token)
 
-    const user = await userService.findUserByOAuthId(userDataFromFacebook.id)
+    const user = await userService.findUserByOAuthId(id)
 
     req.user = user
 

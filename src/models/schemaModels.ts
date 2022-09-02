@@ -5,6 +5,7 @@ import { UserStatus } from './userModels'
 import { Chat, TypeOfGroup } from './groupModels'
 
 export interface IUser {
+  oAuthId: string
   email: string
   firstName: string
   lastName: string

@@ -44,6 +44,15 @@ class DefaultUserService implements IUserService {
       throw new DatabaseError()
     }
   }
+
+  async findUserByOAuthId(id: string): Promise<IUser> {
+    const user = await UserModel.findOne({ oAuthId: id })
+
+    if (!user) {
+      throw new ConflictDatabaseError('User does not exist')
+    }
+    return user
+  }
 }
 
 export const userService = new DefaultUserService()

@@ -2,7 +2,7 @@ import passport from 'passport'
 import dotenv from 'dotenv'
 import strategy from 'passport-facebook'
 import { IUser, SchemaWithId, UserModel, UserStatus } from '@Models'
-import { saveTokenToRedis } from '../../utils/generateToken'
+
 import { userService } from '@Services'
 
 const FacebookStrategy = strategy.Strategy
@@ -24,8 +24,8 @@ passport.use(
       callbackURL: process.env.FACEBOOK_CALLBACK_URL || '',
       profileFields: ['email', 'displayName', 'id', 'name', 'photos'],
     },
-    async function (accessToken, refreshToken, profile, done) {
-      const { email, first_name, last_name, picture } = profile._json
+    async function (accessToken, _, profile, done) {
+      const { email, first_name, last_name, picture, id } = profile._json
 
       const userData: IUser = {
         email,
@@ -34,11 +34,8 @@ passport.use(
         status: UserStatus.ONLINE,
         avatarUrl: picture.data.url,
         groupUserBelongTo: [],
+        oAuthId: id,
       }
-
-      saveTokenToRedis({
-        accessToken,
-      })
 
       let user: SchemaWithId<IUser> | null
 
@@ -47,7 +44,7 @@ passport.use(
         user = await userService.createNewUser(userData)
       }
 
-      done(null, { ...userData, id: user._id })
+      done(null, { ...userData, id: user._id, accessToken })
     },
   ),
 )

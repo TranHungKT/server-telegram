@@ -25,6 +25,19 @@ class DefaultGroupService implements IGroupService {
       throw new DatabaseError()
     }
   }
+
+  async findListOfGroupsByIds(ids: string[]): Promise<SchemaWithId<IGroup>[]> {
+    const listOfGroups = Promise.all(
+      ids.map(async (id) => {
+        const group = await GroupModel.findById(id)
+        if (!group) {
+          throw new ConflictDatabaseError('Group does not exist')
+        }
+        return group
+      }),
+    )
+    return listOfGroups
+  }
 }
 
 export const groupServices = new DefaultGroupService()

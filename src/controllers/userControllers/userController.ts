@@ -35,7 +35,7 @@ passport.use(
         avatarUrl: picture.data.url,
         groupUserBelongTo: [],
       }
-      console.log(accessToken)
+
       saveTokenToRedis({
         accessToken,
       })

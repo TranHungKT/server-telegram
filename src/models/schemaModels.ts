@@ -17,10 +17,10 @@ export interface IUser {
 export const UserModel = model<IUser>(SCHEMA_NAME.USER, UserSchema)
 
 export interface IGroup {
-  name: string
-  memberIds: string[]
+  members: string[]
   chats: Chat[]
   typeOfGroup: TypeOfGroup
+  lastUpdatedAt?: Date
 }
 
 export const GroupModel = model<IGroup>(SCHEMA_NAME.GROUP, GroupSchema)

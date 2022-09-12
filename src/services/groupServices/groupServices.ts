@@ -1,6 +1,12 @@
-import { GroupModel, IGroup, SchemaWithId } from '@Models'
+import { GroupModel, IGroup } from '@Models'
 import { ConflictDatabaseError, DatabaseError } from '@Utils'
-import { IGroupService, ValidateGroupExistPayload } from './groupServiceModels'
+import {
+  IGroupService,
+  ValidateGroupExistPayload,
+  GetListOfGroupsByIdsAndGetMemberInfo,
+} from './groupServiceModels'
+import { HydratedDocument } from 'mongoose'
+import { generateSkip } from '@Utils'
 
 class DefaultGroupService implements IGroupService {
   constructor() {}
@@ -11,14 +17,17 @@ class DefaultGroupService implements IGroupService {
     message = 'This Group Already Exist',
   }: ValidateGroupExistPayload): Promise<void> {
     const response = await GroupModel.find({
-      memberIds: ids,
+      members: ids,
     })
+
     if (!!response.length === shouldThrowErrorWhenExist) {
       throw new ConflictDatabaseError(message)
     }
   }
 
-  async createNewGroup(newGroupData: IGroup): Promise<SchemaWithId<IGroup>> {
+  async createNewGroup(
+    newGroupData: IGroup,
+  ): Promise<HydratedDocument<IGroup>> {
     try {
       return await new GroupModel(newGroupData).save()
     } catch (error) {
@@ -26,16 +35,23 @@ class DefaultGroupService implements IGroupService {
     }
   }
 
-  async findListOfGroupsByIds(ids: string[]): Promise<SchemaWithId<IGroup>[]> {
-    const listOfGroups = Promise.all(
-      ids.map(async (id) => {
-        const group = await GroupModel.findById(id)
-        if (!group) {
-          throw new ConflictDatabaseError('Group does not exist')
-        }
-        return group
-      }),
-    )
+  async findListOfGroupsByIdsAndGetMemberInfo(
+    payload: GetListOfGroupsByIdsAndGetMemberInfo,
+  ): Promise<HydratedDocument<IGroup>[]> {
+    const { ids, pageNumber, pageSize } = payload
+
+    const listOfGroups = await GroupModel.find({
+      _id: { $in: ids },
+    })
+      .sort({ lastUpdatedAt: -1 })
+      .skip(generateSkip({ pageNumber, pageSize }))
+      .limit(pageSize)
+      .select('-__v')
+      .populate({
+        path: 'members',
+        select: '-groupUserBelongTo -oAuthId -__v',
+      })
+
     return listOfGroups
   }
 }

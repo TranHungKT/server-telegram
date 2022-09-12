@@ -11,7 +11,7 @@ import { generateSkip } from '@Utils'
 class DefaultGroupService implements IGroupService {
   constructor() {}
 
-  async validateGroupExist({
+  async validateGroupExists({
     ids,
     shouldThrowErrorWhenExist,
     message = 'This Group Already Exist',

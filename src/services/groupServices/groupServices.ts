@@ -1,11 +1,11 @@
-import { GroupModel, IGroup, SchemaWithId } from '@Models'
+import { GroupModel, IGroup } from '@Models'
 import { ConflictDatabaseError, DatabaseError } from '@Utils'
 import {
   IGroupService,
   ValidateGroupExistPayload,
   GetListOfGroupsByIdsAndGetMemberInfo,
 } from './groupServiceModels'
-
+import { HydratedDocument } from 'mongoose'
 import { generateSkip } from '@Utils'
 
 class DefaultGroupService implements IGroupService {
@@ -25,7 +25,9 @@ class DefaultGroupService implements IGroupService {
     }
   }
 
-  async createNewGroup(newGroupData: IGroup): Promise<SchemaWithId<IGroup>> {
+  async createNewGroup(
+    newGroupData: IGroup,
+  ): Promise<HydratedDocument<IGroup>> {
     try {
       return await new GroupModel(newGroupData).save()
     } catch (error) {
@@ -35,7 +37,7 @@ class DefaultGroupService implements IGroupService {
 
   async findListOfGroupsByIdsAndGetMemberInfo(
     payload: GetListOfGroupsByIdsAndGetMemberInfo,
-  ): Promise<SchemaWithId<IGroup>[]> {
+  ): Promise<HydratedDocument<IGroup>[]> {
     const { ids, pageNumber, pageSize } = payload
 
     const listOfGroups = await GroupModel.find({

@@ -1,5 +1,5 @@
-import { IGroup, SchemaWithId } from '@Models'
-
+import { IGroup } from '@Models'
+import { HydratedDocument } from 'mongoose'
 export interface ValidateGroupExistPayload {
   ids: string[]
   shouldThrowErrorWhenExist: boolean
@@ -14,8 +14,8 @@ export interface GetListOfGroupsByIdsAndGetMemberInfo {
 
 export interface IGroupService {
   validateGroupExist(payload: ValidateGroupExistPayload): Promise<void>
-  createNewGroup(newGroupData: IGroup): Promise<SchemaWithId<IGroup>>
+  createNewGroup(newGroupData: IGroup): Promise<HydratedDocument<IGroup>>
   findListOfGroupsByIdsAndGetMemberInfo(
     payload: GetListOfGroupsByIdsAndGetMemberInfo,
-  ): Promise<SchemaWithId<IGroup>[]>
+  ): Promise<HydratedDocument<IGroup>[]>
 }

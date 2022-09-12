@@ -1,5 +1,6 @@
-import { IUser, SchemaWithId, UserModel } from '@Models'
+import { IUser, UserModel } from '@Models'
 import { ConflictDatabaseError, DatabaseError } from '@Utils'
+import { HydratedDocument } from 'mongoose'
 import { AddGroupIdToListUserPayload, IUserService } from './useServiceModels'
 
 class DefaultUserService implements IUserService {
@@ -37,7 +38,7 @@ class DefaultUserService implements IUserService {
     )
   }
 
-  async createNewUser(newUserData: IUser): Promise<SchemaWithId<IUser>> {
+  async createNewUser(newUserData: IUser): Promise<HydratedDocument<IUser>> {
     try {
       return await new UserModel(newUserData).save()
     } catch (error) {
@@ -45,7 +46,7 @@ class DefaultUserService implements IUserService {
     }
   }
 
-  async findUserByOAuthId(id: string): Promise<SchemaWithId<IUser>> {
+  async findUserByOAuthId(id: string): Promise<HydratedDocument<IUser>> {
     const user = await UserModel.findOne({ oAuthId: id })
 
     if (!user) {

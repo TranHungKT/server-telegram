@@ -8,12 +8,12 @@
 //   list: IGroup[]
 // }
 
-import { IUser, SchemaWithId } from '@Models'
+import { IUser } from '@Models'
 import { groupServices } from '@Services'
 import { Request, Response, NextFunction } from 'express'
 import { GetListGroupQuery, yupGetListOfGroupSchema } from './helpers/schemas'
 import { validateRequest } from '@Utils'
-
+import { HydratedDocument } from 'mongoose'
 export const getListGroupsController = async (
   req: Request<{}, {}, {}, GetListGroupQuery>,
   res: Response,
@@ -22,7 +22,7 @@ export const getListGroupsController = async (
   try {
     await validateRequest(req.query, yupGetListOfGroupSchema)
 
-    const { groupUserBelongTo } = req.user as SchemaWithId<IUser>
+    const { groupUserBelongTo } = req.user as HydratedDocument<IUser>
     const { pageNumber, pageSize } = req.query
 
     const listOfGroups =

@@ -1,8 +1,8 @@
 import passport from 'passport'
 import dotenv from 'dotenv'
 import strategy from 'passport-facebook'
-import { IUser, SchemaWithId, UserModel, UserStatus } from '@Models'
-
+import { IUser, UserModel, UserStatus } from '@Models'
+import { HydratedDocument } from 'mongoose'
 import { userService } from '@Services'
 
 const FacebookStrategy = strategy.Strategy
@@ -37,7 +37,7 @@ passport.use(
         oAuthId: id,
       }
 
-      let user: SchemaWithId<IUser> | null
+      let user: HydratedDocument<IUser> | null
 
       user = await UserModel.findOne({ email })
       if (!user) {

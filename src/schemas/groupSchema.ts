@@ -1,9 +1,9 @@
 import { Schema } from 'mongoose'
 import { TypeOfGroup, IGroup } from '@Models'
+import { SCHEMA_NAME } from '@Constants'
 
 export const GroupSchema = new Schema<IGroup>({
-  name: String,
-  memberIds: [String],
+  members: [{ type: Schema.Types.ObjectId, ref: SCHEMA_NAME.USER }],
   chats: [
     {
       id: String,
@@ -18,5 +18,10 @@ export const GroupSchema = new Schema<IGroup>({
     type: String,
     enum: TypeOfGroup,
     required: true,
+  },
+  lastUpdatedAt: {
+    type: Date,
+    default: new Date(),
+    required: false,
   },
 })

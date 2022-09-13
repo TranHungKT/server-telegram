@@ -67,7 +67,7 @@ export default class App {
     this.io.listen(3001)
 
     this.io.on('connection', (socket) => {
-      console.log('a user connected', socket)
+      console.log('a user connected', socket.id)
     })
   }
 

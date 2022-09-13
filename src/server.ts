@@ -32,7 +32,7 @@ export default class App {
       session({
         resave: false,
         saveUninitialized: true,
-        secret: 'bla bla bla',
+        secret: process.env.SECRET_SESSION || 'secret',
       }),
     )
 

@@ -9,21 +9,15 @@ import passport from 'passport'
 import session from 'express-session'
 // import './consumer'
 import { initDb } from '@Configs'
-import http from 'http'
-import { Server } from 'socket.io'
-import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 
+import SocketServer from './socket'
 const PORT = process.env.PORT || 3000
 
 export default class App {
   private server: Express
-  private serverForSocket: http.Server
-  private io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 
   constructor() {
     this.server = express()
-    this.serverForSocket = http.createServer(this.server)
-    this.io = new Server(this.serverForSocket)
   }
 
   private async initServer() {
@@ -63,17 +57,14 @@ export default class App {
     )
   }
 
-  async emitConnectedSocket() {
-    this.io.listen(3001)
-
-    this.io.on('connection', (socket) => {
-      console.log('a user connected', socket.id)
-    })
+  async connectSocket() {
+    const socket = new SocketServer(this.server)
+    socket.connectSocket()
   }
 
   async start() {
     this.initServer()
-    this.emitConnectedSocket()
+    this.connectSocket()
 
     this.server.listen(PORT, () =>
       console.log(`Server listening on port ${PORT}`),

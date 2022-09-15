@@ -5,6 +5,7 @@ export interface LoginUserData {
   email: string
   firstName: string
   lastName: string
+  avatarUrl: string
   accessToken: string
 }
 

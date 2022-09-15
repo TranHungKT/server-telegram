@@ -57,14 +57,14 @@ export default class App {
     )
   }
 
-  async connectSocket() {
+  async initSocketServer() {
     const socket = new SocketServer(this.server)
     socket.connectSocket()
   }
 
   async start() {
     this.initServer()
-    this.connectSocket()
+    this.initSocketServer()
 
     this.server.listen(PORT, () =>
       console.log(`Server listening on port ${PORT}`),

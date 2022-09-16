@@ -44,7 +44,7 @@ passport.use(
         user = await userService.createNewUser(userData)
       }
 
-      done(null, { ...userData, id: user._id, accessToken })
+      done(null, { accessToken })
     },
   ),
 )

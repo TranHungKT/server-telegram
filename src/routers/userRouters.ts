@@ -11,9 +11,7 @@ userRouter.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/auth/facebook' }),
   (req: RequestUserAfterAuthenticate, res) => {
-    res.redirect(
-      `telegram://app/login?firstName=${req.user.firstName}&lastName=${req.user.lastName}&email=${req.user.email}&accessToken=${req.user.accessToken}&id=${req.user.id}&avatarUrl=${req.user.avatarUrl}`,
-    )
+    res.redirect(`telegram://app/login?&accessToken=${req.user.accessToken}`)
   },
 )
 

@@ -6,7 +6,7 @@ export const getBaseUserController = async (req: Request, res: Response) => {
   const user = req.user as HydratedDocument<IUser>
 
   return res.status(200).send({
-    id: user._id,
+    _id: user._id,
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,

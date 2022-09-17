@@ -1,4 +1,4 @@
-import { model } from 'mongoose'
+import { model, Schema } from 'mongoose'
 import { UserSchema, GroupSchema, MessageSchema } from '@Schemas'
 import { SCHEMA_NAME } from '@Constants'
 import { UserStatus } from './userModels'
@@ -28,7 +28,7 @@ export const GroupModel = model<IGroup>(SCHEMA_NAME.GROUP, GroupSchema)
 export interface IMessage {
   text: string
   createdAt: Date
-  user: Omit<IUser, 'oAuthId' | 'groupUserBelongTo'>
+  user: Schema.Types.ObjectId
   sent: boolean
   received: boolean
   pending: boolean

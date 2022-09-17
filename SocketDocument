@@ -1,0 +1,6 @@
+1. How to send a message by socket.
+
+Step 1: Listen to event send message from client, in payload, we need to have roomId, and message
+Step 2: Emit message to room and message content
+Step 3: Save message and also save to group data
+

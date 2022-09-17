@@ -41,7 +41,7 @@ export const createNewGroupController = async (
 
     const newGroup: IGroup = {
       members: memberIds,
-      chats: [],
+      messages: [],
       typeOfGroup: TypeOfGroup.ALL,
     }
 

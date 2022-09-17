@@ -4,6 +4,7 @@ import { Express } from 'express'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { SOCKET_EVENTS } from './constants/listOfSocketEvents'
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController'
+import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas'
 
 export default class SocketServer {
   private socketServer: http.Server
@@ -29,14 +30,7 @@ export default class SocketServer {
               await this.joinRoom({ socket, roomId: payload })
               break
             case SOCKET_EVENTS.MESSAGE:
-              this.io
-                .to(payload.roomId)
-                .emit(SOCKET_EVENTS.MESSAGE, payload.message)
-
-              await sendMessageController({
-                message: payload.message,
-                groupMessageBelongTo: payload.roomId,
-              })
+              await this.sendMessage(payload)
               break
           }
         } catch (error) {
@@ -53,5 +47,17 @@ export default class SocketServer {
     } catch (error) {
       throw new Error('Can not join this room')
     }
+  }
+
+  async sendMessage(payload: {
+    message: SendNewMessagePayload
+    roomId: string
+  }) {
+    this.io.to(payload.roomId).emit(SOCKET_EVENTS.MESSAGE, payload.message)
+
+    await sendMessageController({
+      message: payload.message,
+      groupMessageBelongTo: payload.roomId,
+    })
   }
 }

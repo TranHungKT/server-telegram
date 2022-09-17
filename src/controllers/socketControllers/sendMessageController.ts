@@ -14,11 +14,15 @@ export const sendMessageController = async ({
   try {
     await yupSendNewMessage.validate(message)
 
-    await messageService.createNewMessage({
+    const newMessage = await messageService.createNewMessage({
       newMessageData: message,
+    })
+    await messageService.addMessageToGroupItBelongTo({
+      messageId: newMessage._id.toString(),
       groupMessageBelongTo,
     })
   } catch (error) {
+    // TODO: ADD PATTERN OF THROW ERROR BY SOCKET
     throw new Error('')
   }
 }

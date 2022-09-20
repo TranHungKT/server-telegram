@@ -6,8 +6,15 @@ export const GroupSchema = new Schema<IGroup>({
   members: [{ type: Schema.Types.ObjectId, ref: SCHEMA_NAME.USER }],
   messages: [
     {
-      type: Schema.Types.ObjectId,
-      ref: SCHEMA_NAME.MESSAGE,
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: SCHEMA_NAME.MESSAGE,
+      },
+      lastUpdatedAt: {
+        type: Date,
+        default: new Date(),
+        required: true,
+      },
     },
   ],
   typeOfGroup: {

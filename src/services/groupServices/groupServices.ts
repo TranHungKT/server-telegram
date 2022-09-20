@@ -4,23 +4,45 @@ import {
   IGroupService,
   ValidateGroupExistPayload,
   GetListOfGroupsByIdsAndGetMemberInfo,
+  GetListMessagesResponse,
 } from './groupServiceModels'
-import { HydratedDocument } from 'mongoose'
+import mongoose, { HydratedDocument } from 'mongoose'
 import { generateSkip } from '@Utils'
+
+import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema'
 
 class DefaultGroupService implements IGroupService {
   constructor() {}
+
+  async findGroupById(groupId: string): Promise<HydratedDocument<IGroup>> {
+    try {
+      const response = await GroupModel.findById(groupId)
+
+      if (!response) {
+        throw new ConflictDatabaseError('This group does not exist')
+      }
+
+      return response
+    } catch (error) {
+      console.log(error)
+      throw new ConflictDatabaseError('This group does not exist')
+    }
+  }
 
   async validateGroupExist({
     ids,
     shouldThrowErrorWhenExist,
     message = 'This Group Already Exist',
   }: ValidateGroupExistPayload): Promise<void> {
-    const response = await GroupModel.find({
-      members: ids,
-    })
+    try {
+      const response = await GroupModel.find({
+        members: ids,
+      })
 
-    if (!!response.length === shouldThrowErrorWhenExist) {
+      if (!!response.length === shouldThrowErrorWhenExist) {
+        throw new ConflictDatabaseError(message)
+      }
+    } catch (error) {
       throw new ConflictDatabaseError(message)
     }
   }
@@ -53,6 +75,54 @@ class DefaultGroupService implements IGroupService {
       })
 
     return listOfGroups
+  }
+
+  async getListMessages(
+    payload: GetListMessagePayload,
+  ): Promise<GetListMessagesResponse[]> {
+    const { groupId, pageNumber, pageSize } = payload
+
+    const parsedPageNumber = parseInt(pageNumber)
+    const parsedPageSize = parseInt(pageSize)
+
+    const listOfMessages = await GroupModel.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(groupId) } },
+      { $unwind: '$messages' },
+      { $project: { messages: 1 } },
+      { $sort: { 'messages.lastUpdatedAt': -1 } },
+      {
+        $skip: generateSkip({
+          pageNumber: parsedPageNumber,
+          pageSize: parsedPageSize,
+        }),
+      },
+      { $limit: parsedPageSize },
+      {
+        $group: {
+          _id: '$_id',
+          messages: {
+            $push: {
+              _id: '$messages._id',
+              lastUpdatedAt: '$messages.lastUpdatedAt',
+            },
+          },
+        },
+      },
+    ])
+
+    return (await GroupModel.populate(listOfMessages, {
+      path: 'messages._id',
+    })) as any
+  }
+
+  async getTotalChatCount(groupId: string): Promise<number> {
+    const response = await GroupModel.findById(groupId)
+
+    if (!response) {
+      throw new ConflictDatabaseError('This group does not exist')
+    }
+
+    return response.members.length
   }
 }
 

@@ -1,4 +1,16 @@
+import { IUser } from '@Models'
 import { GetListMessagesResponse } from '@Services'
+import { HydratedDocument } from 'mongoose'
+
+export const normalizedUser = (user: HydratedDocument<IUser>) => {
+  const { _id, avatarUrl, firstName, lastName } = user
+
+  return {
+    _id,
+    name: `${firstName} ${lastName}`,
+    avatar: avatarUrl,
+  }
+}
 
 export const normalizedResponseMessage = (
   messages: GetListMessagesResponse,
@@ -10,7 +22,7 @@ export const normalizedResponseMessage = (
       _id: _id,
       text: text,
       createdAt: createdAt,
-      user: user,
+      user: normalizedUser(user),
       sent: sent,
       received: received,
       pending: pending,

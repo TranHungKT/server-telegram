@@ -1,5 +1,5 @@
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema'
-import { IGroup, IMessage } from '@Models'
+import { IGroup, IMessage, IUser } from '@Models'
 import { HydratedDocument, ObjectId } from 'mongoose'
 export interface ValidateGroupExistPayload {
   ids: string[]
@@ -13,10 +13,16 @@ export interface GetListOfGroupsByIdsAndGetMemberInfo {
   pageNumber: number
 }
 
+interface IMessageAfterPopulateUser extends Omit<IMessage, 'user'> {
+  user: HydratedDocument<IUser>
+}
+
+type IdForMessages = HydratedDocument<IMessageAfterPopulateUser>
+
 export interface GetListMessagesResponse {
   _id: ObjectId
   messages: {
-    _id: HydratedDocument<IMessage>
+    _id: IdForMessages
     lastUpdatedAt: Date
   }[]
 }

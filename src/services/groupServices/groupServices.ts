@@ -1,4 +1,4 @@
-import { GroupModel, IGroup } from '@Models'
+import { GroupModel, IGroup, UserModel } from '@Models'
 import { ConflictDatabaseError, DatabaseError } from '@Utils'
 import {
   IGroupService,
@@ -110,9 +110,19 @@ class DefaultGroupService implements IGroupService {
       },
     ])
 
-    return (await GroupModel.populate(listOfMessages, {
+    const listMessage = await GroupModel.populate(listOfMessages, {
       path: 'messages._id',
-    })) as any
+    })
+
+    const listMessageAfterPopulateUser: any = await GroupModel.populate(
+      listMessage,
+      {
+        path: 'messages._id.user',
+        model: UserModel,
+        select: '_id firstName lastName avatarUrl',
+      },
+    )
+    return listMessageAfterPopulateUser
   }
 
   async getTotalChatCount(groupId: string): Promise<number> {

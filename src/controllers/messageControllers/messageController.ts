@@ -2,7 +2,7 @@
 // STEP 1: Validate in the query, we need to have groupId, and pageSize, pageNumber
 // STEP 2: Validate user request need to have this group
 // STEP 3: Populate list message in group, then sort by date. After that, populate user data.
-// STEP 4: Response for user
+// STEP 4: Normalized the response and send for user
 
 import { Request, Response, NextFunction } from 'express'
 import { validateRequest } from '@Utils'
@@ -53,7 +53,6 @@ export const messageController = async (
       list: normalizedResponse,
     })
   } catch (error) {
-    console.log(error)
     return next(error)
   }
 }

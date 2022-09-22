@@ -1,3 +1,4 @@
+import { GROUP_NOT_EXIST, GROUP_NOT_HAVE_THIS_USER } from '@Constants'
 import { ConflictDatabaseError } from '@Utils'
 
 export const validateUserExistInGroup = ({
@@ -8,10 +9,10 @@ export const validateUserExistInGroup = ({
   groupMembers?: string[]
 }) => {
   if (!groupMembers) {
-    throw new ConflictDatabaseError('This group does not exist')
+    throw new ConflictDatabaseError(GROUP_NOT_EXIST)
   }
 
   if (!groupMembers.includes(userId)) {
-    throw new ConflictDatabaseError('This group does not include this user')
+    throw new ConflictDatabaseError(GROUP_NOT_HAVE_THIS_USER)
   }
 }

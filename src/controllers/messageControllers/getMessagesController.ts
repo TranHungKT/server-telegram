@@ -24,8 +24,10 @@ export const getMessagesController = async (
 ) => {
   try {
     const { _id } = req.user as HydratedDocument<IUser>
-    await validateRequest(req.query, yupGetListMessagesSchema)
     const { groupId, pageNumber, pageSize } = req.query
+
+    await validateRequest(req.query, yupGetListMessagesSchema)
+
     const groupUserBelongTo = await groupServices.findGroupById(groupId)
 
     validateUserExistInGroup({

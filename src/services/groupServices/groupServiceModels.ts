@@ -28,6 +28,7 @@ export interface GetListMessagesResponse {
     lastUpdatedAt: Date;
   }[];
 }
+
 export interface IGroupService {
   findGroupById(groupId: string): Promise<HydratedDocument<IGroup>>;
   validateGroupExist(payload: ValidateGroupExistPayload): Promise<void>;

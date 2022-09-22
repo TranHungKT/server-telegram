@@ -1,6 +1,6 @@
 import { HydratedDocument } from 'mongoose';
 
-import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
+import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers';
 import { IMessage } from '@Models';
 
 export interface CreateNewMessagePayload {

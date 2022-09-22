@@ -12,10 +12,10 @@ import { validateRequest } from '@Utils';
 
 import {
   GetListMessagePayload,
+  normalizedResponseMessage,
+  validateUserExistInGroup,
   yupGetListMessagesSchema,
-} from './helpers/schema';
-import { normalizedResponseMessage } from './helpers/utils';
-import { validateUserExistInGroup } from './helpers/validations';
+} from './helpers';
 
 export const getMessagesController = async (
   req: Request<{}, {}, {}, GetListMessagePayload>,

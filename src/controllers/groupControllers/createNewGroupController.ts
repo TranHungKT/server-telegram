@@ -14,9 +14,9 @@ import { validateRequest } from '@Utils';
 
 import {
   CreateNewGroupPayload,
+  isListOfMemebersConflict,
   yupCreateNewGroupSchema,
-} from './helpers/schemas';
-import { isListOfMemebersConflict } from './helpers/validates';
+} from './helpers';
 
 export const createNewGroupController = async (
   req: Request<{}, {}, CreateNewGroupPayload>,

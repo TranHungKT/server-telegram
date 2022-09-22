@@ -1,6 +1,6 @@
 import { messageService } from '@Services';
 
-import { SendNewMessagePayload, yupSendNewMessage } from './helpers/schemas';
+import { SendNewMessagePayload, yupSendNewMessage } from './helpers';
 
 interface SendMessageControllerProps {
   groupMessageBelongTo: string;

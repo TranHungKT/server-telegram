@@ -8,7 +8,7 @@ import {
 } from './groupServiceModels'
 import mongoose, { HydratedDocument } from 'mongoose'
 import { generateSkip } from '@Utils'
-
+import { GROUP_ALREADY_EXIST, GROUP_NOT_EXIST } from '@Constants'
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema'
 
 class DefaultGroupService implements IGroupService {
@@ -19,20 +19,19 @@ class DefaultGroupService implements IGroupService {
       const response = await GroupModel.findById(groupId)
 
       if (!response) {
-        throw new ConflictDatabaseError('This group does not exist')
+        throw new ConflictDatabaseError(GROUP_NOT_EXIST)
       }
 
       return response
     } catch (error) {
-      console.log(error)
-      throw new ConflictDatabaseError('This group does not exist')
+      throw new ConflictDatabaseError(GROUP_NOT_EXIST)
     }
   }
 
   async validateGroupExist({
     ids,
     shouldThrowErrorWhenExist,
-    message = 'This Group Already Exist',
+    message = GROUP_ALREADY_EXIST,
   }: ValidateGroupExistPayload): Promise<void> {
     try {
       const response = await GroupModel.find({
@@ -114,22 +113,18 @@ class DefaultGroupService implements IGroupService {
       path: 'messages._id',
     })
 
-    const listMessageAfterPopulateUser: any = await GroupModel.populate(
-      listMessage,
-      {
-        path: 'messages._id.user',
-        model: UserModel,
-        select: '_id firstName lastName avatarUrl',
-      },
-    )
-    return listMessageAfterPopulateUser
+    return (await GroupModel.populate(listMessage, {
+      path: 'messages._id.user',
+      model: UserModel,
+      select: '_id firstName lastName avatarUrl',
+    })) as any
   }
 
   async getTotalChatCount(groupId: string): Promise<number> {
     const response = await GroupModel.findById(groupId)
 
     if (!response) {
-      throw new ConflictDatabaseError('This group does not exist')
+      throw new ConflictDatabaseError(GROUP_NOT_EXIST)
     }
 
     return response.members.length

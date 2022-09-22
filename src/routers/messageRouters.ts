@@ -1,9 +1,13 @@
 import express from 'express'
 
-import { messageController } from '@Controllers/messageControllers/messageController'
+import { getMessagesController } from '@Controllers/messageControllers/getMessagesController'
 import { verifyTokenMiddlewares } from '@Middlewares'
 const messageRouter = express.Router()
 
-messageRouter.get('/list-message', verifyTokenMiddlewares, messageController)
+messageRouter.get(
+  '/list-message',
+  verifyTokenMiddlewares,
+  getMessagesController,
+)
 
 export { messageRouter }

@@ -16,7 +16,8 @@ import { HydratedDocument } from 'mongoose'
 import { groupServices } from '@Services'
 
 import { normalizedResponseMessage } from './helpers/utils'
-export const messageController = async (
+
+export const getMessagesController = async (
   req: Request<{}, {}, {}, GetListMessagePayload>,
   res: Response,
   next: NextFunction,

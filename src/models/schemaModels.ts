@@ -18,7 +18,10 @@ export const UserModel = model<IUser>(SCHEMA_NAME.USER, UserSchema)
 
 export interface IGroup {
   members: string[]
-  messages: string[]
+  messages: {
+    _id: string
+    lastUpdatedAt: Date
+  }[]
   typeOfGroup: TypeOfGroup
   lastUpdatedAt?: Date
 }
@@ -29,9 +32,9 @@ export interface IMessage {
   text: string
   createdAt: Date
   user: Schema.Types.ObjectId
-  sent: boolean
-  received: boolean
-  pending: boolean
+  sent?: boolean
+  received?: boolean
+  pending?: boolean
 }
 
 export const MessageModel = model<IMessage>(SCHEMA_NAME.MESSAGE, MessageSchema)

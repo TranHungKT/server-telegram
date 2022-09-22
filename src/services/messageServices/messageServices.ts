@@ -29,7 +29,10 @@ export class DefaultMessageService implements IMessageService {
   }: AddMessageToGroupItBelongToPayload): Promise<void> {
     const group = await GroupModel.findById(groupMessageBelongTo)
     if (group) {
-      group.messages = [...group.messages, messageId]
+      group.messages = [
+        ...group.messages,
+        { _id: messageId, lastUpdatedAt: new Date() },
+      ]
       group.save()
     }
   }

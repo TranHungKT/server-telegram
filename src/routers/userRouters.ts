@@ -2,9 +2,12 @@ import express from 'express'
 import passport from 'passport'
 import '../controllers/userControllers/userController'
 import { getBaseUserController } from '../controllers/userControllers/getBaseUserController'
-const userRouter = express.Router()
+
 import { RequestUserAfterAuthenticate } from '@Models'
 import { verifyTokenMiddlewares } from '@Middlewares'
+
+const userRouter = express.Router()
+
 userRouter.get('/auth/facebook', passport.authenticate('facebook'))
 
 userRouter.get(

@@ -35,7 +35,8 @@ module.exports = {
     'prefer-template': 'error',
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'prettier/prettier': 'off',
   },
   plugins: ['unused-imports', 'eslint-plugin-prettier'],
   settings: {},
-}
+};

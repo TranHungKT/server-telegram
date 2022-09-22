@@ -1,9 +1,9 @@
-import { Request } from 'express'
+import { Request } from 'express';
 
 export interface RequestUserAfterAuthenticate extends Request {
   user: {
-    accessToken: string
-  }
+    accessToken: string;
+  };
 }
 
 export enum UserStatus {

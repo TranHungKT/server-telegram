@@ -1,20 +1,21 @@
-import passport from 'passport'
-import dotenv from 'dotenv'
-import strategy from 'passport-facebook'
-import { IUser, UserModel, UserStatus } from '@Models'
-import { HydratedDocument } from 'mongoose'
-import { userService } from '@Services'
+import dotenv from 'dotenv';
+import { HydratedDocument } from 'mongoose';
+import passport from 'passport';
+import strategy from 'passport-facebook';
 
-const FacebookStrategy = strategy.Strategy
+import { IUser, UserModel, UserStatus } from '@Models';
+import { userService } from '@Services';
 
-dotenv.config()
+const FacebookStrategy = strategy.Strategy;
+
+dotenv.config();
 passport.serializeUser(function (user, done) {
-  done(null, user)
-})
+  done(null, user);
+});
 
 passport.deserializeUser(function (obj, done) {
-  done(null, obj as any)
-})
+  done(null, obj as any);
+});
 
 passport.use(
   new FacebookStrategy(
@@ -25,7 +26,7 @@ passport.use(
       profileFields: ['email', 'displayName', 'id', 'name', 'photos'],
     },
     async function (accessToken, _, profile, done) {
-      const { email, first_name, last_name, picture, id } = profile._json
+      const { email, first_name, last_name, picture, id } = profile._json;
 
       const userData: IUser = {
         email,
@@ -35,16 +36,16 @@ passport.use(
         avatarUrl: picture.data.url,
         groupUserBelongTo: [],
         oAuthId: id,
-      }
+      };
 
-      let user: HydratedDocument<IUser> | null
+      let user: HydratedDocument<IUser> | null;
 
-      user = await UserModel.findOne({ email })
+      user = await UserModel.findOne({ email });
       if (!user) {
-        user = await userService.createNewUser(userData)
+        user = await userService.createNewUser(userData);
       }
 
-      done(null, { accessToken })
+      done(null, { accessToken });
     },
   ),
-)
+);

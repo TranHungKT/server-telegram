@@ -1,5 +1,5 @@
 module.exports = {
-  semi: false,
+  semi: true,
   tabWidth: 2,
   singleQuote: true,
   bracketSpacing: true,
@@ -13,4 +13,7 @@ module.exports = {
   requirePragma: false,
   trailingComma: 'all',
   useTabs: false,
+  importOrder: ['^!@', '^@', '^[./]'],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
 }

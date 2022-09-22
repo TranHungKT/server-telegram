@@ -1,49 +1,51 @@
-import 'module-alias/register'
-import express, { Express } from 'express'
-import { router } from './routers'
-import 'dotenv/config'
-import { Request, Response, NextFunction } from 'express'
-import { CustomError } from '@Utils'
-import cors from 'cors'
-import passport from 'passport'
-import session from 'express-session'
-// import './consumer'
-import { initDb } from '@Configs'
+import cors from 'cors';
+import 'dotenv/config';
+import express, { Express } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import session from 'express-session';
+import 'module-alias/register';
+import passport from 'passport';
 
-import SocketServer from './socket'
-const PORT = process.env.PORT || 3000
+// import './consumer'
+import { initDb } from '@Configs';
+import { CustomError } from '@Utils';
+
+import { router } from './routers';
+import SocketServer from './socket';
+
+const PORT = process.env.PORT || 3000;
 
 export default class App {
-  private server: Express
+  private server: Express;
 
   constructor() {
-    this.server = express()
+    this.server = express();
   }
 
   private async initServer() {
-    this.server.use(cors())
+    this.server.use(cors());
     this.server.use(
       session({
         resave: false,
         saveUninitialized: true,
         secret: process.env.SECRET_SESSION || 'secret',
       }),
-    )
+    );
 
-    initDb()
+    initDb();
 
-    this.server.use(passport.initialize())
-    this.server.use(passport.session())
+    this.server.use(passport.initialize());
+    this.server.use(passport.session());
 
-    this.server.use(express.json())
-    this.server.use(router)
+    this.server.use(express.json());
+    this.server.use(router);
 
     this.server.use(
       (error: Error, req: Request, res: Response, _: NextFunction) => {
         if (error instanceof CustomError) {
           return res
             .status(error.statusCode)
-            .send({ error: error.serializeErrors() })
+            .send({ error: error.serializeErrors() });
         }
 
         return res.status(400).send({
@@ -52,26 +54,26 @@ export default class App {
               message: 'Something went wrong',
             },
           ],
-        })
+        });
       },
-    )
+    );
   }
 
   async initSocketServer() {
-    const socket = new SocketServer(this.server)
-    socket.connectSocket()
+    const socket = new SocketServer(this.server);
+    socket.connectSocket();
   }
 
   async start() {
-    this.initServer()
-    this.initSocketServer()
+    this.initServer();
+    this.initSocketServer();
 
     this.server.listen(PORT, () =>
       console.log(`Server listening on port ${PORT}`),
-    )
+    );
   }
 }
 
-const app = new App()
+const app = new App();
 
-app.start()
+app.start();

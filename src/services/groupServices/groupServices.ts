@@ -1,30 +1,32 @@
-import { GroupModel, IGroup, UserModel } from '@Models'
-import { ConflictDatabaseError, DatabaseError } from '@Utils'
+import mongoose, { HydratedDocument } from 'mongoose';
+
+import { GROUP_ALREADY_EXIST, GROUP_NOT_EXIST } from '@Constants';
+import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
+import { GroupModel, IGroup, UserModel } from '@Models';
+import { ConflictDatabaseError, DatabaseError } from '@Utils';
+import { generateSkip } from '@Utils';
+
 import {
+  GetListMessagesResponse,
+  GetListOfGroupsByIdsAndGetMemberInfo,
   IGroupService,
   ValidateGroupExistPayload,
-  GetListOfGroupsByIdsAndGetMemberInfo,
-  GetListMessagesResponse,
-} from './groupServiceModels'
-import mongoose, { HydratedDocument } from 'mongoose'
-import { generateSkip } from '@Utils'
-import { GROUP_ALREADY_EXIST, GROUP_NOT_EXIST } from '@Constants'
-import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema'
+} from './groupServiceModels';
 
 class DefaultGroupService implements IGroupService {
   constructor() {}
 
   async findGroupById(groupId: string): Promise<HydratedDocument<IGroup>> {
     try {
-      const response = await GroupModel.findById(groupId)
+      const response = await GroupModel.findById(groupId);
 
       if (!response) {
-        throw new ConflictDatabaseError(GROUP_NOT_EXIST)
+        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
       }
 
-      return response
+      return response;
     } catch (error) {
-      throw new ConflictDatabaseError(GROUP_NOT_EXIST)
+      throw new ConflictDatabaseError(GROUP_NOT_EXIST);
     }
   }
 
@@ -36,13 +38,13 @@ class DefaultGroupService implements IGroupService {
     try {
       const response = await GroupModel.find({
         members: ids,
-      })
+      });
 
       if (!!response.length === shouldThrowErrorWhenExist) {
-        throw new ConflictDatabaseError(message)
+        throw new ConflictDatabaseError(message);
       }
     } catch (error) {
-      throw new ConflictDatabaseError(message)
+      throw new ConflictDatabaseError(message);
     }
   }
 
@@ -50,16 +52,16 @@ class DefaultGroupService implements IGroupService {
     newGroupData: IGroup,
   ): Promise<HydratedDocument<IGroup>> {
     try {
-      return await new GroupModel(newGroupData).save()
+      return await new GroupModel(newGroupData).save();
     } catch (error) {
-      throw new DatabaseError()
+      throw new DatabaseError();
     }
   }
 
   async findListOfGroupsByIdsAndGetMemberInfo(
     payload: GetListOfGroupsByIdsAndGetMemberInfo,
   ): Promise<HydratedDocument<IGroup>[]> {
-    const { ids, pageNumber, pageSize } = payload
+    const { ids, pageNumber, pageSize } = payload;
 
     const listOfGroups = await GroupModel.find({
       _id: { $in: ids },
@@ -71,18 +73,18 @@ class DefaultGroupService implements IGroupService {
       .populate({
         path: 'members',
         select: '-groupUserBelongTo -oAuthId -__v',
-      })
+      });
 
-    return listOfGroups
+    return listOfGroups;
   }
 
   async getListMessages(
     payload: GetListMessagePayload,
   ): Promise<GetListMessagesResponse[]> {
-    const { groupId, pageNumber, pageSize } = payload
+    const { groupId, pageNumber, pageSize } = payload;
 
-    const parsedPageNumber = parseInt(pageNumber)
-    const parsedPageSize = parseInt(pageSize)
+    const parsedPageNumber = parseInt(pageNumber);
+    const parsedPageSize = parseInt(pageSize);
 
     const listOfMessages = await GroupModel.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(groupId) } },
@@ -107,28 +109,28 @@ class DefaultGroupService implements IGroupService {
           },
         },
       },
-    ])
+    ]);
 
     const listMessage = await GroupModel.populate(listOfMessages, {
       path: 'messages._id',
-    })
+    });
 
     return (await GroupModel.populate(listMessage, {
       path: 'messages._id.user',
       model: UserModel,
       select: '_id firstName lastName avatarUrl',
-    })) as any
+    })) as any;
   }
 
   async getTotalChatCount(groupId: string): Promise<number> {
-    const response = await GroupModel.findById(groupId)
+    const response = await GroupModel.findById(groupId);
 
     if (!response) {
-      throw new ConflictDatabaseError(GROUP_NOT_EXIST)
+      throw new ConflictDatabaseError(GROUP_NOT_EXIST);
     }
 
-    return response.members.length
+    return response.members.length;
   }
 }
 
-export const groupServices = new DefaultGroupService()
+export const groupServices = new DefaultGroupService();

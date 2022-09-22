@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 export const initDb = async () =>
   await mongoose
@@ -6,4 +6,4 @@ export const initDb = async () =>
     // eslint-disable-next-line no-console
     .then(() => console.log('MongoDb connected'))
     // eslint-disable-next-line
-    .catch((err: Error) => console.log(err))
+    .catch((err: Error) => console.log(err));

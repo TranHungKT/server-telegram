@@ -1,6 +1,7 @@
-import { Schema } from 'mongoose'
-import { TypeOfGroup, IGroup } from '@Models'
-import { SCHEMA_NAME } from '@Constants'
+import { Schema } from 'mongoose';
+
+import { SCHEMA_NAME } from '@Constants';
+import { IGroup, TypeOfGroup } from '@Models';
 
 export const GroupSchema = new Schema<IGroup>({
   members: [{ type: Schema.Types.ObjectId, ref: SCHEMA_NAME.USER }],
@@ -27,4 +28,4 @@ export const GroupSchema = new Schema<IGroup>({
     default: new Date(),
     required: false,
   },
-})
+});

@@ -2,4 +2,4 @@
 // mean basicControllers
 
 // This file will include validate functions
-export {}
+export {};

@@ -1,13 +1,13 @@
-import redisClient from '../redis'
-import { DatabaseError } from '../utils/'
+import redisClient from '../redis';
+import { DatabaseError } from '../utils/';
 
 export const setRedisValue = (key: string, value: string) => {
   try {
-    redisClient.set(key, value)
+    redisClient.set(key, value);
   } catch (error) {
-    throw new DatabaseError()
+    throw new DatabaseError();
   }
-}
+};
 
 export const getRedisValue = async (
   key: string,
@@ -15,9 +15,9 @@ export const getRedisValue = async (
 ) => {
   redisClient.get(key, (err, value) => {
     if (err || !value) {
-      return callback('', true)
+      return callback('', true);
     }
 
-    return callback(JSON.parse(value).accessToken, false)
-  })
-}
+    return callback(JSON.parse(value).accessToken, false);
+  });
+};

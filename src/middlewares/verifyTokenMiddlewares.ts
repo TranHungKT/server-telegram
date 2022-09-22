@@ -5,11 +5,11 @@
 // Step 2: Get userData from facebook API with accessToken
 // Step 3: Use the id from facebook to get data in our database
 // Step 4: Attach user data into req.user
+import { NextFunction, Request, Response } from 'express';
 
-import { UNAUTHORIZED_MESSAGE } from '@Constants'
-import { APIError } from '@Utils'
-import { NextFunction, Response, Request } from 'express'
-import { facebookServices, userService } from '@Services'
+import { UNAUTHORIZED_MESSAGE } from '@Constants';
+import { facebookServices, userService } from '@Services';
+import { APIError } from '@Utils';
 
 export const verifyTokenMiddlewares = async (
   req: Request,
@@ -17,20 +17,20 @@ export const verifyTokenMiddlewares = async (
   next: NextFunction,
 ) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (token === undefined) {
-      throw new APIError(UNAUTHORIZED_MESSAGE)
+      throw new APIError(UNAUTHORIZED_MESSAGE);
     }
 
-    const { id } = await facebookServices.getUserData(token)
+    const { id } = await facebookServices.getUserData(token);
 
-    const user = await userService.findUserByOAuthId(id)
+    const user = await userService.findUserByOAuthId(id);
 
-    req.user = user
+    req.user = user;
 
-    return next()
+    return next();
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};

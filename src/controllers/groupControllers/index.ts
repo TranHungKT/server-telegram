@@ -1,2 +1,2 @@
-export { getListGroupsController } from './getListGroupsController'
-export { createNewGroupController } from './groupController'
+export { getListGroupsController } from './getListGroupsController';
+export { createNewGroupController } from './createNewGroupController';

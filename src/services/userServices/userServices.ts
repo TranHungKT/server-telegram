@@ -1,7 +1,9 @@
-import { IUser, UserModel } from '@Models'
-import { ConflictDatabaseError, DatabaseError } from '@Utils'
-import { HydratedDocument } from 'mongoose'
-import { AddGroupIdToListUserPayload, IUserService } from './useServiceModels'
+import { HydratedDocument } from 'mongoose';
+
+import { IUser, UserModel } from '@Models';
+import { ConflictDatabaseError, DatabaseError } from '@Utils';
+
+import { AddGroupIdToListUserPayload, IUserService } from './useServiceModels';
 
 class DefaultUserService implements IUserService {
   constructor() {}
@@ -9,51 +11,51 @@ class DefaultUserService implements IUserService {
   async findUsersByIds(ids: string[]): Promise<IUser[]> {
     const groupOfUser = Promise.all(
       ids.map(async (id) => {
-        const user = await UserModel.findById(id)
+        const user = await UserModel.findById(id);
 
         if (!user) {
-          throw new ConflictDatabaseError('User does not exist')
+          throw new ConflictDatabaseError('User does not exist');
         }
-        return user
+        return user;
       }),
-    )
-    return groupOfUser
+    );
+    return groupOfUser;
   }
 
   async addGroupIdToListUser(
     payload: AddGroupIdToListUserPayload,
   ): Promise<void> {
-    const { memberIds, groupId } = payload
+    const { memberIds, groupId } = payload;
     Promise.all(
       memberIds.map(async (memberId) => {
-        const user = await UserModel.findById(memberId)
+        const user = await UserModel.findById(memberId);
 
         if (!user) {
-          throw new ConflictDatabaseError('User does not exist')
+          throw new ConflictDatabaseError('User does not exist');
         }
-        user.groupUserBelongTo = [...user.groupUserBelongTo, groupId]
+        user.groupUserBelongTo = [...user.groupUserBelongTo, groupId];
 
-        user.save()
+        user.save();
       }),
-    )
+    );
   }
 
   async createNewUser(newUserData: IUser): Promise<HydratedDocument<IUser>> {
     try {
-      return await new UserModel(newUserData).save()
+      return await new UserModel(newUserData).save();
     } catch (error) {
-      throw new DatabaseError()
+      throw new DatabaseError();
     }
   }
 
   async findUserByOAuthId(id: string): Promise<HydratedDocument<IUser>> {
-    const user = await UserModel.findOne({ oAuthId: id })
+    const user = await UserModel.findOne({ oAuthId: id });
 
     if (!user) {
-      throw new ConflictDatabaseError('User does not exist')
+      throw new ConflictDatabaseError('User does not exist');
     }
-    return user
+    return user;
   }
 }
 
-export const userService = new DefaultUserService()
+export const userService = new DefaultUserService();

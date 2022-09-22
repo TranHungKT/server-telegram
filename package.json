@@ -9,7 +9,10 @@
     "test": "npm run lint",
     "dev": "nodemon src/server.ts",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "prettify": "prettier \"src/**/*\" --write",
+    "prettify:ci": "prettier \"src/**/*\" --check",
+    "eslint:ci": "eslint \"src/**/*.spec.{ts,tsx,js,jsx}\""
   },
   "keywords": [],
   "author": "",
@@ -35,6 +38,7 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^3.3.0",
     "@tsconfig/node17": "^1.0.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.12",

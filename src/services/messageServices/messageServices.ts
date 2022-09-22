@@ -1,12 +1,13 @@
-import { GroupModel, IMessage, MessageModel } from '@Models'
-import {
-  IMessageService,
-  CreateNewMessagePayload,
-  AddMessageToGroupItBelongToPayload,
-} from './messageServiceModels'
+import { HydratedDocument } from 'mongoose';
 
-import { DatabaseError } from '@Utils'
-import { HydratedDocument } from 'mongoose'
+import { GroupModel, IMessage, MessageModel } from '@Models';
+import { DatabaseError } from '@Utils';
+
+import {
+  AddMessageToGroupItBelongToPayload,
+  CreateNewMessagePayload,
+  IMessageService,
+} from './messageServiceModels';
 
 export class DefaultMessageService implements IMessageService {
   constructor() {}
@@ -15,11 +16,11 @@ export class DefaultMessageService implements IMessageService {
     newMessageData,
   }: CreateNewMessagePayload): Promise<HydratedDocument<IMessage>> {
     try {
-      const newMessage = new MessageModel(newMessageData)
-      await newMessage.save()
-      return newMessage
+      const newMessage = new MessageModel(newMessageData);
+      await newMessage.save();
+      return newMessage;
     } catch (error) {
-      throw new DatabaseError()
+      throw new DatabaseError();
     }
   }
 
@@ -27,15 +28,15 @@ export class DefaultMessageService implements IMessageService {
     messageId,
     groupMessageBelongTo,
   }: AddMessageToGroupItBelongToPayload): Promise<void> {
-    const group = await GroupModel.findById(groupMessageBelongTo)
+    const group = await GroupModel.findById(groupMessageBelongTo);
     if (group) {
       group.messages = [
         ...group.messages,
         { _id: messageId, lastUpdatedAt: new Date() },
-      ]
-      group.save()
+      ];
+      group.save();
     }
   }
 }
 
-export const messageService = new DefaultMessageService()
+export const messageService = new DefaultMessageService();

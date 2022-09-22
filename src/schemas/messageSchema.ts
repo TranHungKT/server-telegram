@@ -1,6 +1,7 @@
-import { Schema } from 'mongoose'
-import { IMessage } from '@Models'
-import { SCHEMA_NAME } from '@Constants'
+import { Schema } from 'mongoose';
+
+import { SCHEMA_NAME } from '@Constants';
+import { IMessage } from '@Models';
 
 export const MessageSchema = new Schema<IMessage>({
   text: String,
@@ -15,4 +16,4 @@ export const MessageSchema = new Schema<IMessage>({
   sent: Boolean,
   received: Boolean,
   pending: Boolean,
-})
+});

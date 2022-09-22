@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express';
+
 // import { validateRequest } from '@Utils'
 export const basicController = async (
   req: Request,
@@ -7,14 +8,14 @@ export const basicController = async (
 ) => {
   try {
     // validateRequest()
-    console.log('Validate')
+    console.log('Validate');
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 
   try {
-    res.send('OK')
+    res.send('OK');
   } catch (error) {
-    return next(error)
+    return next(error);
   }
-}
+};

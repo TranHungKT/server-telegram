@@ -1,1 +1,1 @@
-export { verifyTokenMiddlewares } from './verifyTokenMiddlewares'
+export { verifyTokenMiddlewares } from './verifyTokenMiddlewares';

@@ -1,5 +1,6 @@
-import { Schema } from 'mongoose'
-import { UserStatus, IUser } from '@Models'
+import { Schema } from 'mongoose';
+
+import { IUser, UserStatus } from '@Models';
 
 export const UserSchema = new Schema<IUser>({
   email: String,
@@ -13,4 +14,4 @@ export const UserSchema = new Schema<IUser>({
     enum: UserStatus,
     required: true,
   },
-})
+});

@@ -6,56 +6,57 @@
 // Step 3: All Ids are valid.
 // Step 4: Create New group
 // Step 5: Add _id of group to groupUserBelongTo to all users in memberIds
+import { NextFunction, Request, Response } from 'express';
 
-import { Request, Response, NextFunction } from 'express'
-import { validateRequest } from '@Utils'
+import { IGroup, TypeOfGroup } from '@Models';
+import { groupServices, userService } from '@Services';
+import { validateRequest } from '@Utils';
+
 import {
   CreateNewGroupPayload,
   yupCreateNewGroupSchema,
-} from './helpers/schemas'
+} from './helpers/schemas';
+import { isListOfMemebersConflict } from './helpers/validates';
 
-import { isListOfMemebersConflict } from './helpers/validates'
-import { IGroup, TypeOfGroup } from '@Models'
-import { groupServices, userService } from '@Services'
 export const createNewGroupController = async (
   req: Request<{}, {}, CreateNewGroupPayload>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    await validateRequest(req.body, yupCreateNewGroupSchema)
+    await validateRequest(req.body, yupCreateNewGroupSchema);
 
-    const { memberIds } = req.body
+    const { memberIds } = req.body;
 
     // Step 1
     await groupServices.validateGroupExist({
       ids: req.body.memberIds,
       shouldThrowErrorWhenExist: true,
-    })
+    });
 
     // Step 2
-    isListOfMemebersConflict(req.body.memberIds)
+    isListOfMemebersConflict(req.body.memberIds);
 
     // Step 3
-    await userService.findUsersByIds(memberIds)
+    await userService.findUsersByIds(memberIds);
 
     const newGroup: IGroup = {
       members: memberIds,
       messages: [],
       typeOfGroup: TypeOfGroup.ALL,
-    }
+    };
 
     // Step 4
-    const newGroupAfterCreation = await groupServices.createNewGroup(newGroup)
+    const newGroupAfterCreation = await groupServices.createNewGroup(newGroup);
 
     // Step 5
     await userService.addGroupIdToListUser({
       memberIds,
       groupId: newGroupAfterCreation._id.toString(),
-    })
+    });
 
-    return res.status(201).send(newGroupAfterCreation)
+    return res.status(201).send(newGroupAfterCreation);
   } catch (error) {
-    return next(error)
+    return next(error);
   }
-}
+};

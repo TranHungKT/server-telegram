@@ -1,27 +1,28 @@
-import express from 'express'
-import passport from 'passport'
-import '../controllers/userControllers/userController'
-import { getBaseUserController } from '../controllers/userControllers/getBaseUserController'
+import express from 'express';
+import passport from 'passport';
 
-import { RequestUserAfterAuthenticate } from '@Models'
-import { verifyTokenMiddlewares } from '@Middlewares'
+import { verifyTokenMiddlewares } from '@Middlewares';
+import { RequestUserAfterAuthenticate } from '@Models';
 
-const userRouter = express.Router()
+import { getBaseUserController } from '../controllers/userControllers/getBaseUserController';
+import '../controllers/userControllers/userController';
 
-userRouter.get('/auth/facebook', passport.authenticate('facebook'))
+const userRouter = express.Router();
+
+userRouter.get('/auth/facebook', passport.authenticate('facebook'));
 
 userRouter.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/auth/facebook' }),
   (req: RequestUserAfterAuthenticate, res) => {
-    res.redirect(`telegram://app/login?&accessToken=${req.user.accessToken}`)
+    res.redirect(`telegram://app/login?&accessToken=${req.user.accessToken}`);
   },
-)
+);
 
 userRouter.get('/fail', (req, res) => {
-  res.send('Failed attempt')
-})
+  res.send('Failed attempt');
+});
 
-userRouter.get('/user-data', verifyTokenMiddlewares, getBaseUserController)
+userRouter.get('/user-data', verifyTokenMiddlewares, getBaseUserController);
 
-export { userRouter }
+export { userRouter };

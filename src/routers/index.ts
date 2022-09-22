@@ -1,12 +1,14 @@
-import { Router } from 'express'
-import { userRouter } from './userRouters'
-import { groupRouter } from './groupRouters'
-import { messageRouter } from './messageRouters'
+import { Router } from 'express';
 
-const router = Router()
+import { groupRouter } from './groupRouters';
+import { messageRouter } from './messageRouters';
+import { userRouter } from './userRouters';
 
-router.use(userRouter)
-router.use(groupRouter)
-router.use(messageRouter)
+// eslint-disable-next-line prettier/prettier
+const router = Router();
 
-export { router }
+router.use(userRouter);
+router.use(groupRouter);
+router.use(messageRouter);
+
+export { router };

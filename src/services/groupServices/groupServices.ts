@@ -129,7 +129,7 @@ class DefaultGroupService implements IGroupService {
       throw new ConflictDatabaseError(GROUP_NOT_EXIST);
     }
 
-    return response.members.length;
+    return response.messages.length;
   }
 }
 

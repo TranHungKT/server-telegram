@@ -1,3 +1,4 @@
+import { MessageModel } from '@Models';
 import { messageService } from '@Services';
 
 import { SendNewMessagePayload, yupSendNewMessage } from './helpers';
@@ -20,6 +21,11 @@ export const sendMessageController = async ({
     await messageService.addMessageToGroupItBelongTo({
       messageId: newMessage._id.toString(),
       groupMessageBelongTo,
+    });
+
+    return await MessageModel.populate(newMessage, {
+      path: 'user',
+      select: '_id avatarUrl firstName lastName',
     });
   } catch (error) {
     // TODO: ADD PATTERN OF THROW ERROR BY SOCKET

@@ -31,7 +31,7 @@ export default class SocketServer {
             case SOCKET_EVENTS.JOIN_ROOM:
               await this.joinRoom({ socket, roomId: payload });
               break;
-            case SOCKET_EVENTS.MESSAGE:
+            case SOCKET_EVENTS.SEND_MESSAGE:
               await this.sendMessage(payload, socket);
               break;
           }

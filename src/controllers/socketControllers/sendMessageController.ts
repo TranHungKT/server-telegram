@@ -1,5 +1,8 @@
-import { MessageModel } from '@Models';
+import { HydratedDocument } from 'mongoose';
+
+import { IMessageAfterPopulateUserAndMapForFronEnd, IUser } from '@Models';
 import { messageService } from '@Services';
+import { normalizedUser } from '@Utils';
 
 import { SendNewMessagePayload, yupSendNewMessage } from './helpers';
 
@@ -11,7 +14,7 @@ interface SendMessageControllerProps {
 export const sendMessageController = async ({
   groupMessageBelongTo,
   message,
-}: SendMessageControllerProps) => {
+}: SendMessageControllerProps): Promise<IMessageAfterPopulateUserAndMapForFronEnd> => {
   try {
     await yupSendNewMessage.validate(message);
 
@@ -23,10 +26,25 @@ export const sendMessageController = async ({
       groupMessageBelongTo,
     });
 
-    return await MessageModel.populate(newMessage, {
+    const newMessageAfterPopulatedUser = await newMessage.populate<{
+      user: HydratedDocument<IUser>;
+    }>({
       path: 'user',
       select: '_id avatarUrl firstName lastName',
     });
+
+    const { _id, text, createdAt, user, sent, received, pending } =
+      newMessageAfterPopulatedUser;
+
+    return {
+      _id: _id,
+      text: text,
+      createdAt: createdAt,
+      user: normalizedUser(user),
+      sent: sent,
+      received: received,
+      pending: pending,
+    };
   } catch (error) {
     // TODO: ADD PATTERN OF THROW ERROR BY SOCKET
     throw new Error('');

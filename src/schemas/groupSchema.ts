@@ -28,4 +28,9 @@ export const GroupSchema = new Schema<IGroup>({
     default: new Date(),
     required: false,
   },
+  lastMessage: {
+    type: Schema.Types.ObjectId,
+    ref: SCHEMA_NAME.MESSAGE,
+    required: false,
+  },
 });

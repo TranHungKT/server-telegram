@@ -3,6 +3,8 @@ import { HydratedDocument, ObjectId } from 'mongoose';
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
 import { IGroup, IMessageAfterPopulateUser } from '@Models';
 
+import { AddMessageToGroupItBelongToPayload } from '../messageServices/messageServiceModels';
+
 export interface ValidateGroupExistPayload {
   ids: string[];
   shouldThrowErrorWhenExist: boolean;
@@ -36,4 +38,8 @@ export interface IGroupService {
     payload: GetListMessagePayload,
   ): Promise<GetListMessagesResponse[]>;
   getTotalChatCount(groupId: string): Promise<number>;
+  updateLastMessage({
+    groupMessageBelongTo,
+    messageId,
+  }: AddMessageToGroupItBelongToPayload): Promise<void>;
 }

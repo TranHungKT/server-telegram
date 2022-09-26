@@ -31,8 +31,8 @@ export default class SocketServer {
             case SOCKET_EVENTS.JOIN_ROOM:
               await this.joinRoom({ socket, roomId: payload });
               break;
-            case SOCKET_EVENTS.MESSAGE:
-              await this.sendMessage(payload);
+            case SOCKET_EVENTS.SEND_MESSAGE:
+              await this.sendMessage(payload, socket);
               break;
           }
         } catch (error) {
@@ -51,15 +51,17 @@ export default class SocketServer {
     }
   }
 
-  async sendMessage(payload: {
-    message: SendNewMessagePayload;
-    roomId: string;
-  }) {
-    this.io.to(payload.roomId).emit(SOCKET_EVENTS.MESSAGE, payload.message);
-
-    await sendMessageController({
+  async sendMessage(
+    payload: {
+      message: SendNewMessagePayload;
+      roomId: string;
+    },
+    socket: Socket,
+  ) {
+    const newMessage = await sendMessageController({
       message: payload.message,
       groupMessageBelongTo: payload.roomId,
     });
+    socket.broadcast.to(payload.roomId).emit('get-message', newMessage);
   }
 }

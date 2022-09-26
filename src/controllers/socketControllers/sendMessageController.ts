@@ -30,7 +30,6 @@ export const sendMessageController = async ({
       user: HydratedDocument<IUser>;
     }>({
       path: 'user',
-      select: '_id avatarUrl firstName lastName',
     });
 
     const { _id, text, createdAt, user, sent, received, pending } =

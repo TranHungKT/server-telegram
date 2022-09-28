@@ -6,6 +6,7 @@ import { GroupModel, IGroup, UserModel } from '@Models';
 import { ConflictDatabaseError, DatabaseError } from '@Utils';
 import { generateSkip } from '@Utils';
 
+import { AddMessageToGroupItBelongToPayload } from '../messageServices/messageServiceModels';
 import {
   GetListMessagesResponse,
   GetListOfGroupsByIdsAndGetMemberInfo,
@@ -69,11 +70,12 @@ class DefaultGroupService implements IGroupService {
       .sort({ lastUpdatedAt: -1 })
       .skip(generateSkip({ pageNumber, pageSize }))
       .limit(pageSize)
-      .select('-__v')
+      .select('-__v -messages')
       .populate({
         path: 'members',
         select: '-groupUserBelongTo -oAuthId -__v',
-      });
+      })
+      .populate('lastMessage');
 
     return listOfGroups;
   }
@@ -130,6 +132,25 @@ class DefaultGroupService implements IGroupService {
     }
 
     return response.messages.length;
+  }
+
+  async updateLastMessage({
+    groupMessageBelongTo,
+    messageId,
+  }: AddMessageToGroupItBelongToPayload): Promise<void> {
+    try {
+      const response = await GroupModel.findById(groupMessageBelongTo);
+
+      if (!response) {
+        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
+      }
+
+      response.lastMessage = messageId;
+
+      response.save();
+    } catch (error) {
+      throw new DatabaseError();
+    }
   }
 }
 

@@ -26,6 +26,7 @@ export interface IGroup {
   }[];
   typeOfGroup: TypeOfGroup;
   lastUpdatedAt?: Date;
+  lastMessage?: string;
 }
 
 export const GroupModel = model<IGroup>(SCHEMA_NAME.GROUP, GroupSchema);

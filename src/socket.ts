@@ -3,10 +3,11 @@ import http from 'http';
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
+import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
 
-import { SOCKET_EVENTS } from './constants/listOfSocketEvents';
+import { SocketError } from './utils/customsError';
 
 export default class SocketServer {
   private socketServer: http.Server;
@@ -36,18 +37,26 @@ export default class SocketServer {
               break;
           }
         } catch (error) {
-          socket.emit('Error', 'Something went wrong');
+          console.log(error);
+          this.handleSocketError(error as SocketError, socket.id);
         }
       });
     });
   }
 
+  async handleSocketError(error: SocketError, socketId: string) {
+    this.io
+      .to(socketId)
+      .emit(SOCKET_EVENTS.SOCKET_ERROR, error.normarlizeError());
+  }
+
   async joinRoom({ socket, roomId }: { socket: Socket; roomId: string }) {
     try {
       console.log('a user join room', roomId);
+
       await socket?.join(roomId);
     } catch (error) {
-      throw new Error('Can not join this room');
+      throw new SocketError(SOCKET_ERROR_TYPE.JOIN_ROOM_FAIL);
     }
   }
 
@@ -58,10 +67,14 @@ export default class SocketServer {
     },
     socket: Socket,
   ) {
-    const newMessage = await sendMessageController({
-      message: payload.message,
-      groupMessageBelongTo: payload.roomId,
-    });
-    socket.broadcast.to(payload.roomId).emit('get-message', newMessage);
+    try {
+      const newMessage = await sendMessageController({
+        message: payload.message,
+        groupMessageBelongTo: payload.roomId,
+      });
+      socket.broadcast.to(payload.roomId).emit('get-message', newMessage);
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SEND_MESSAGE_ERROR);
+    }
   }
 }

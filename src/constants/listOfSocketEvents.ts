@@ -3,4 +3,5 @@ export const SOCKET_EVENTS = {
   LEAVE_ROOM: 'leave-room',
   SEND_MESSAGE: 'send-message',
   GET_MESSAGE: 'get-message',
+  SOCKET_ERROR: 'socket-error',
 };

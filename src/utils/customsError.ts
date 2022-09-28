@@ -94,3 +94,21 @@ export class ExternalServiceError extends CustomError {
     };
   }
 }
+
+export class SocketError {
+  statusCode = 400;
+  type: string;
+  payload: unknown;
+
+  constructor(type: string, payload?: unknown) {
+    this.type = type;
+    this.payload = payload ? payload : undefined;
+  }
+
+  normarlizeError() {
+    return {
+      type: this.type,
+      payload: this.payload,
+    };
+  }
+}

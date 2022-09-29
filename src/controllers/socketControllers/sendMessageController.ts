@@ -6,9 +6,10 @@
 // STEP 5: Populate user data and response
 import { HydratedDocument } from 'mongoose';
 
+import { SOCKET_ERROR_TYPE } from '@Constants';
 import { IMessageAfterPopulateUserAndMapForFronEnd, IUser } from '@Models';
 import { groupServices, messageService } from '@Services';
-import { normalizedUser } from '@Utils';
+import { APIError, normalizedUser } from '@Utils';
 
 import { SendNewMessagePayload, yupSendNewMessage } from './helpers';
 
@@ -64,6 +65,6 @@ export const sendMessageController = async ({
     };
   } catch (error) {
     // TODO: ADD PATTERN OF THROW ERROR BY SOCKET
-    throw new Error('');
+    throw new APIError(SOCKET_ERROR_TYPE.SAVE_MESSAGE_ERROR);
   }
 };

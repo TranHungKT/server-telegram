@@ -1,5 +1,6 @@
+import { DatabaseError } from '@Utils';
+
 import redisClient from '../redis';
-import { DatabaseError } from '../utils/';
 
 export const setRedisValue = (key: string, value: string) => {
   try {

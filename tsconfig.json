@@ -21,6 +21,12 @@
         "@Schemas": ["src/schemas"],
         "@Services": ["src/services"],
         "@Utils": ["src/utils"],
-      },      
+      },  
   },
+  "include" : [
+    "src/*.ts"
+  ],   
+  "exclude" : [
+    "node_modules" 
+  ] 
 }

@@ -1,6 +1,5 @@
-import { Express } from 'express';
 import http from 'http';
-import { Server, Socket } from 'socket.io';
+import socket from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
@@ -10,17 +9,21 @@ import { sendMessageController } from '@Controllers/socketControllers/sendMessag
 import { SocketError } from './utils/customsError';
 
 export default class SocketServer {
-  private socketServer: http.Server;
-  private io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
+  private io: socket.Server<
+    DefaultEventsMap,
+    DefaultEventsMap,
+    DefaultEventsMap,
+    any
+  >;
 
-  constructor(expressServer: Express) {
-    this.socketServer = http.createServer(expressServer);
-    this.io = new Server(this.socketServer);
+  constructor(expressServer: http.Server) {
+    this.io = new socket.Server(expressServer, {
+      path: '/socket',
+      transports: ['websocket'],
+    });
   }
 
   async connectSocket() {
-    this.io.listen(3001);
-
     this.io.on('connection', (socket) => {
       console.log('a user connected', socket.id);
 
@@ -50,7 +53,13 @@ export default class SocketServer {
       .emit(SOCKET_EVENTS.SOCKET_ERROR, error.normarlizeError());
   }
 
-  async joinRoom({ socket, roomId }: { socket: Socket; roomId: string }) {
+  async joinRoom({
+    socket,
+    roomId,
+  }: {
+    socket: socket.Socket;
+    roomId: string;
+  }) {
     try {
       console.log('a user join room', roomId);
 
@@ -65,14 +74,14 @@ export default class SocketServer {
       message: SendNewMessagePayload;
       roomId: string;
     },
-    socket: Socket,
+    socket: socket.Socket,
   ) {
     try {
       const newMessage = await sendMessageController({
         message: payload.message,
         groupMessageBelongTo: payload.roomId,
       });
-      socket.broadcast.to(payload.roomId).emit('get-message', newMessage);
+      socket.broadcast.emit('get-message', newMessage);
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SEND_MESSAGE_ERROR);
     }

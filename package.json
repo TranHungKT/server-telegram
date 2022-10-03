@@ -5,6 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "start": "ts-node build/src/server.js",
+    "postinstall": "npm run build",
+    "build": "tsc",
     "typescript": "tsc",
     "test": "npm run lint",
     "dev": "nodemon src/server.ts",

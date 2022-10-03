@@ -3,6 +3,7 @@ import 'dotenv/config';
 import express, { Express } from 'express';
 import { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
+import http from 'http';
 import 'module-alias/register';
 import passport from 'passport';
 
@@ -17,9 +18,11 @@ const PORT = process.env.PORT || 3000;
 
 export default class App {
   private server: Express;
+  private app: http.Server;
 
   constructor() {
     this.server = express();
+    this.app = http.createServer(this.server);
   }
 
   private async initServer() {
@@ -60,15 +63,15 @@ export default class App {
   }
 
   async initSocketServer() {
-    const socket = new SocketServer(this.server);
+    const socket = new SocketServer(this.app);
     socket.connectSocket();
   }
 
   async start() {
-    this.initServer();
-    this.initSocketServer();
+    await this.initServer();
+    await this.initSocketServer();
 
-    this.server.listen(PORT, () =>
+    this.app.listen(PORT, () =>
       console.log(`Server listening on port ${PORT}`),
     );
   }

@@ -81,7 +81,10 @@ export default class SocketServer {
         message: payload.message,
         groupMessageBelongTo: payload.roomId,
       });
-      socket.broadcast.emit('get-message', newMessage);
+
+      socket.broadcast
+        .to(payload.roomId)
+        .emit('get-message', { newMessage, groupId: payload.roomId });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SEND_MESSAGE_ERROR);
     }

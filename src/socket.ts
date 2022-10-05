@@ -5,8 +5,8 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
-
-import { SocketError } from './utils/customsError';
+import { userService } from '@Services';
+import { SocketError, normalizedUser } from '@Utils';
 
 export default class SocketServer {
   private io: socket.Server<
@@ -37,6 +37,12 @@ export default class SocketServer {
               break;
             case SOCKET_EVENTS.SEND_MESSAGE:
               await this.sendMessage(payload, socket);
+              break;
+            case SOCKET_EVENTS.TYPING:
+              await this.sendTypingEvent({ ...payload, event }, socket);
+              break;
+            case SOCKET_EVENTS.UN_TYPING:
+              await this.sendTypingEvent({ ...payload, event }, socket);
               break;
           }
         } catch (error) {
@@ -82,11 +88,31 @@ export default class SocketServer {
         groupMessageBelongTo: payload.roomId,
       });
 
-      socket.broadcast
-        .to(payload.roomId)
-        .emit('get-message', { newMessage, groupId: payload.roomId });
+      socket.broadcast.to(payload.roomId).emit(SOCKET_EVENTS.GET_MESSAGE, {
+        newMessage,
+        groupId: payload.roomId,
+      });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SEND_MESSAGE_ERROR);
+    }
+  }
+
+  async sendTypingEvent(
+    payload: {
+      user: string;
+      groupId: string;
+      event: string;
+    },
+    socket: socket.Socket,
+  ) {
+    try {
+      const user = await userService.findUserById(payload.user);
+      socket.broadcast.to(payload.groupId).emit(payload.event, {
+        groupId: payload.groupId,
+        user: normalizedUser(user),
+      });
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SEND_TYPING_EVENT_ERROR);
     }
   }
 }

@@ -56,6 +56,15 @@ class DefaultUserService implements IUserService {
     }
     return user;
   }
+
+  async findUserById(id: string): Promise<HydratedDocument<IUser>> {
+    const user = await UserModel.findById(id);
+
+    if (!user) {
+      throw new ConflictDatabaseError('User does not exist');
+    }
+    return user;
+  }
 }
 
 export const userService = new DefaultUserService();

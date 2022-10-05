@@ -12,4 +12,5 @@ export interface IUserService {
   findUsersByIds(ids: string[]): Promise<IUser[]>;
   addGroupIdToListUser(payload: AddGroupIdToListUserPayload): Promise<void>;
   findUserByOAuthId(id: string): Promise<IUser>;
+  findUserById(id: string): Promise<HydratedDocument<IUser>>;
 }

@@ -6,9 +6,7 @@ import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
 import { userService } from '@Services';
-
-import { SocketError } from './utils/customsError';
-import { normalizedUser } from './utils/userUtils';
+import { SocketError, normalizedUser } from '@Utils';
 
 export default class SocketServer {
   private io: socket.Server<

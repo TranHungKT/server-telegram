@@ -1,5 +1,6 @@
 import { HydratedDocument } from 'mongoose';
 
+import { USER_NOT_EXIST } from '@Constants';
 import { IUser, UserModel } from '@Models';
 import { ConflictDatabaseError, DatabaseError } from '@Utils';
 
@@ -14,7 +15,7 @@ class DefaultUserService implements IUserService {
         const user = await UserModel.findById(id);
 
         if (!user) {
-          throw new ConflictDatabaseError('User does not exist');
+          throw new ConflictDatabaseError(USER_NOT_EXIST);
         }
         return user;
       }),
@@ -31,7 +32,7 @@ class DefaultUserService implements IUserService {
         const user = await UserModel.findById(memberId);
 
         if (!user) {
-          throw new ConflictDatabaseError('User does not exist');
+          throw new ConflictDatabaseError(USER_NOT_EXIST);
         }
         user.groupUserBelongTo = [...user.groupUserBelongTo, groupId];
 
@@ -52,7 +53,7 @@ class DefaultUserService implements IUserService {
     const user = await UserModel.findOne({ oAuthId: id });
 
     if (!user) {
-      throw new ConflictDatabaseError('User does not exist');
+      throw new ConflictDatabaseError(USER_NOT_EXIST);
     }
     return user;
   }
@@ -61,7 +62,7 @@ class DefaultUserService implements IUserService {
     const user = await UserModel.findById(id);
 
     if (!user) {
-      throw new ConflictDatabaseError('User does not exist');
+      throw new ConflictDatabaseError(USER_NOT_EXIST);
     }
     return user;
   }

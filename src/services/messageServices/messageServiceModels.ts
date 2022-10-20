@@ -21,4 +21,8 @@ export interface IMessageService {
     messageId,
     groupMessageBelongTo,
   }: AddMessageToGroupItBelongToPayload): Promise<void>;
+
+  updateMessageToReceivedStatus(
+    messageId: string,
+  ): Promise<HydratedDocument<IMessage>>;
 }

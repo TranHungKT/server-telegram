@@ -1,5 +1,6 @@
 import { HydratedDocument } from 'mongoose';
 
+import { CAN_NOT_FIND_MESSAGE } from '@Constants';
 import { GroupModel, IMessage, MessageModel } from '@Models';
 import { DatabaseError } from '@Utils';
 
@@ -17,6 +18,7 @@ export class DefaultMessageService implements IMessageService {
   }: CreateNewMessagePayload): Promise<HydratedDocument<IMessage>> {
     try {
       const newMessage = new MessageModel(newMessageData);
+      newMessage.sent = true;
       await newMessage.save();
       return newMessage;
     } catch (error) {
@@ -35,6 +37,21 @@ export class DefaultMessageService implements IMessageService {
         { _id: messageId, lastUpdatedAt: new Date() },
       ];
       group.save();
+    }
+  }
+
+  async updateMessageToReceivedStatus(messageId: string) {
+    try {
+      const message = await MessageModel.findById(messageId);
+      if (message) {
+        message.received = true;
+        message.save();
+
+        return message;
+      }
+      throw new Error(CAN_NOT_FIND_MESSAGE);
+    } catch (error) {
+      throw new DatabaseError();
     }
   }
 }

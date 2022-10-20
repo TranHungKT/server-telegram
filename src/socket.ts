@@ -5,7 +5,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
-import { userService } from '@Services';
+import { messageService, userService } from '@Services';
 import { SocketError, normalizedUser } from '@Utils';
 
 export default class SocketServer {
@@ -25,24 +25,25 @@ export default class SocketServer {
 
   async connectSocket() {
     this.io.on('connection', (socket) => {
-      console.log('a user connected', socket.id);
-
       socket.onAny(async (event, ...args) => {
         try {
           const payload = args[0];
-          console.log('payload', payload);
+          console.log('payload', event, payload);
           switch (event) {
             case SOCKET_EVENTS.JOIN_ROOM:
               await this.joinRoom({ socket, roomId: payload });
               break;
             case SOCKET_EVENTS.SEND_MESSAGE:
-              await this.sendMessage(payload, socket);
+              await this.sendMessage(payload);
               break;
             case SOCKET_EVENTS.TYPING:
               await this.sendTypingEvent({ ...payload, event }, socket);
               break;
             case SOCKET_EVENTS.UN_TYPING:
               await this.sendTypingEvent({ ...payload, event }, socket);
+              break;
+            case SOCKET_EVENTS.RECEIVED_MESSAGE:
+              await this.receivedMessage({ ...payload, socket });
               break;
           }
         } catch (error) {
@@ -67,28 +68,23 @@ export default class SocketServer {
     roomId: string;
   }) {
     try {
-      console.log('a user join room', roomId);
-
       await socket?.join(roomId);
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.JOIN_ROOM_FAIL);
     }
   }
 
-  async sendMessage(
-    payload: {
-      message: SendNewMessagePayload;
-      roomId: string;
-    },
-    socket: socket.Socket,
-  ) {
+  async sendMessage(payload: {
+    message: SendNewMessagePayload;
+    roomId: string;
+  }) {
     try {
       const newMessage = await sendMessageController({
         message: payload.message,
         groupMessageBelongTo: payload.roomId,
       });
 
-      socket.broadcast.to(payload.roomId).emit(SOCKET_EVENTS.GET_MESSAGE, {
+      this.io.to(payload.roomId).emit(SOCKET_EVENTS.GET_MESSAGE, {
         newMessage,
         groupId: payload.roomId,
       });
@@ -113,6 +109,27 @@ export default class SocketServer {
       });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SEND_TYPING_EVENT_ERROR);
+    }
+  }
+
+  async receivedMessage({
+    groupId,
+    messageId,
+    socket,
+  }: {
+    groupId: string;
+    messageId: string;
+    socket: socket.Socket;
+  }) {
+    try {
+      await messageService.updateMessageToReceivedStatus(messageId);
+
+      return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.RECEIVED_MESSAGE, {
+        groupId,
+        messageId,
+      });
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
     }
   }
 }

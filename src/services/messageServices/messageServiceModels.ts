@@ -12,6 +12,11 @@ export interface AddMessageToGroupItBelongToPayload {
   groupMessageBelongTo: string;
 }
 
+export interface UpdateUnreadMessagePayload {
+  groupMessageBelongTo: string;
+  sender: string;
+}
+
 export interface IMessageService {
   createNewMessage({
     newMessageData,

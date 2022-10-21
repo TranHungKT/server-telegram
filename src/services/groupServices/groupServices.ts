@@ -6,7 +6,10 @@ import { GroupModel, IGroup, UserModel } from '@Models';
 import { ConflictDatabaseError, DatabaseError } from '@Utils';
 import { generateSkip } from '@Utils';
 
-import { AddMessageToGroupItBelongToPayload } from '../messageServices/messageServiceModels';
+import {
+  AddMessageToGroupItBelongToPayload,
+  UpdateUnreadMessagePayload,
+} from '../messageServices/messageServiceModels';
 import {
   GetListMessagesResponse,
   GetListOfGroupsByIdsAndGetMemberInfo,
@@ -146,6 +149,31 @@ class DefaultGroupService implements IGroupService {
       }
 
       response.lastMessage = messageId;
+
+      response.save();
+    } catch (error) {
+      throw new DatabaseError();
+    }
+  }
+
+  async updateUnReadMessage({
+    groupMessageBelongTo,
+    sender,
+  }: UpdateUnreadMessagePayload): Promise<void> {
+    try {
+      const response = await GroupModel.findById(groupMessageBelongTo);
+
+      if (!response) {
+        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
+      }
+
+      if (response.unReadMessages.length) {
+        response.unReadMessages.forEach((unReadMessage) => {
+          if (unReadMessage.userId !== sender) {
+            unReadMessage.numberOfUnReadMessages += 1;
+          }
+        });
+      }
 
       response.save();
     } catch (error) {

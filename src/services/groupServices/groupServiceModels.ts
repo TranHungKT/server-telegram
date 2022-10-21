@@ -3,7 +3,10 @@ import { HydratedDocument, ObjectId } from 'mongoose';
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
 import { IGroup, IMessageAfterPopulateUser } from '@Models';
 
-import { AddMessageToGroupItBelongToPayload } from '../messageServices/messageServiceModels';
+import {
+  AddMessageToGroupItBelongToPayload,
+  UpdateUnreadMessagePayload,
+} from '../messageServices/messageServiceModels';
 
 export interface ValidateGroupExistPayload {
   ids: string[];
@@ -42,4 +45,8 @@ export interface IGroupService {
     groupMessageBelongTo,
     messageId,
   }: AddMessageToGroupItBelongToPayload): Promise<void>;
+  updateUnReadMessage({
+    groupMessageBelongTo,
+    sender,
+  }: UpdateUnreadMessagePayload): Promise<void>;
 }

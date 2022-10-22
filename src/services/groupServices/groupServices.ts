@@ -3,7 +3,11 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { GROUP_ALREADY_EXIST, GROUP_NOT_EXIST } from '@Constants';
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
 import { GroupModel, IGroup, UserModel } from '@Models';
-import { ConflictDatabaseError, DatabaseError } from '@Utils';
+import {
+  ConflictDatabaseError,
+  DatabaseError,
+  RequestValidationPayloadError,
+} from '@Utils';
 import { generateSkip } from '@Utils';
 
 import {
@@ -13,6 +17,7 @@ import {
 import {
   GetListMessagesResponse,
   GetListOfGroupsByIdsAndGetMemberInfo,
+  GetNumberOfUnReadMessageResponse,
   IGroupService,
   ValidateGroupExistPayload,
 } from './groupServiceModels';
@@ -179,6 +184,49 @@ class DefaultGroupService implements IGroupService {
     } catch (error) {
       throw new DatabaseError();
     }
+  }
+
+  async getNumberOfUnReadMessage({
+    groupIds,
+    userId,
+  }: {
+    groupIds: string[];
+    userId: string;
+  }): Promise<GetNumberOfUnReadMessageResponse> {
+    console.log(groupIds);
+    const response = Promise.all(
+      groupIds.map(async (groupId) => {
+        try {
+          const group = await GroupModel.findById(groupId).select(
+            'unReadMessages',
+          );
+
+          if (!group) {
+            throw new RequestValidationPayloadError(
+              `Group id ${groupId} does not exist`,
+            );
+          }
+
+          const unReadMessageForUser = group.unReadMessages.find(
+            (unReadMessage) => unReadMessage.userId.toString() === userId,
+          );
+
+          if (!unReadMessageForUser) {
+            throw new RequestValidationPayloadError(
+              `User ${userId} does not exist in ${groupId}`,
+            );
+          }
+
+          return {
+            groupId,
+            numberOfUnReadMessage: unReadMessageForUser.numberOfUnReadMessages,
+          };
+        } catch (error) {
+          throw new DatabaseError();
+        }
+      }),
+    );
+    return response;
   }
 }
 

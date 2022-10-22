@@ -30,6 +30,11 @@ export interface GetListMessagesResponse {
   }[];
 }
 
+export type GetNumberOfUnReadMessageResponse = {
+  groupId: string;
+  numberOfUnReadMessage: number;
+}[];
+
 export interface IGroupService {
   findGroupById(groupId: string): Promise<HydratedDocument<IGroup>>;
   validateGroupExist(payload: ValidateGroupExistPayload): Promise<void>;
@@ -49,4 +54,11 @@ export interface IGroupService {
     groupMessageBelongTo,
     sender,
   }: UpdateUnreadMessagePayload): Promise<void>;
+  getNumberOfUnReadMessage({
+    groupIds,
+    userId,
+  }: {
+    groupIds: string[];
+    userId: string;
+  }): Promise<GetNumberOfUnReadMessageResponse>;
 }

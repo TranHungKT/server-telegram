@@ -12,7 +12,7 @@ export interface AddMessageToGroupItBelongToPayload {
   groupMessageBelongTo: string;
 }
 
-export interface UpdateUnreadMessagePayload {
+export interface UpdateUnReadMessagePayload {
   groupMessageBelongTo: string;
   sender: string;
 }

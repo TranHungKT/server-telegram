@@ -13,7 +13,7 @@ import {
   yupGetNumberOfUnReadMessage,
 } from './helpers';
 
-export const getUnreadMessageController = async (
+export const getUnReadMessageController = async (
   req: Request<{}, {}, GetNumberOfUnReadMessagePayload>,
   res: Response,
   next: NextFunction,

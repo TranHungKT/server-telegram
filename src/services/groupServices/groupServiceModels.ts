@@ -5,7 +5,7 @@ import { IGroup, IMessageAfterPopulateUser } from '@Models';
 
 import {
   AddMessageToGroupItBelongToPayload,
-  UpdateUnreadMessagePayload,
+  UpdateUnReadMessagePayload,
 } from '../messageServices/messageServiceModels';
 
 export interface ValidateGroupExistPayload {
@@ -53,7 +53,7 @@ export interface IGroupService {
   updateUnReadMessage({
     groupMessageBelongTo,
     sender,
-  }: UpdateUnreadMessagePayload): Promise<void>;
+  }: UpdateUnReadMessagePayload): Promise<void>;
   getNumberOfUnReadMessage({
     groupIds,
     userId,

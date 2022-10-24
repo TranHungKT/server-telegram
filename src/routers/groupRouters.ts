@@ -3,7 +3,7 @@ import express from 'express';
 import {
   createNewGroupController,
   getListGroupsController,
-  getUnreadMessageController,
+  getUnReadMessageController,
 } from '@Controllers/groupControllers/';
 import { verifyTokenMiddlewares } from '@Middlewares';
 
@@ -24,7 +24,7 @@ groupRouter.get(
 groupRouter.post(
   '/get-unread-messages',
   verifyTokenMiddlewares,
-  getUnreadMessageController,
+  getUnReadMessageController,
 );
 
 export { groupRouter };

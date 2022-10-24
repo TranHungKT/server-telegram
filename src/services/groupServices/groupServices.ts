@@ -12,7 +12,7 @@ import { generateSkip } from '@Utils';
 
 import {
   AddMessageToGroupItBelongToPayload,
-  UpdateUnreadMessagePayload,
+  UpdateUnReadMessagePayload,
 } from '../messageServices/messageServiceModels';
 import {
   GetListMessagesResponse,
@@ -164,7 +164,7 @@ class DefaultGroupService implements IGroupService {
   async updateUnReadMessage({
     groupMessageBelongTo,
     sender,
-  }: UpdateUnreadMessagePayload): Promise<void> {
+  }: UpdateUnReadMessagePayload): Promise<void> {
     try {
       const response = await GroupModel.findById(groupMessageBelongTo);
 

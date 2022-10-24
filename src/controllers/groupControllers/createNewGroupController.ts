@@ -15,7 +15,7 @@ import { validateRequest } from '@Utils';
 import {
   CreateNewGroupPayload,
   isListOfMemebersConflict,
-  normalizeUnreadMessage,
+  normalizeUnReadMessage,
   yupCreateNewGroupSchema,
 } from './helpers';
 
@@ -45,7 +45,7 @@ export const createNewGroupController = async (
       members: memberIds,
       messages: [],
       typeOfGroup: TypeOfGroup.ALL,
-      unReadMessages: normalizeUnreadMessage(memberIds),
+      unReadMessages: normalizeUnReadMessage(memberIds),
     };
 
     // Step 4

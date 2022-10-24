@@ -21,7 +21,7 @@ groupRouter.get(
   getListGroupsController,
 );
 
-groupRouter.get(
+groupRouter.post(
   '/get-unread-messages',
   verifyTokenMiddlewares,
   getUnreadMessageController,

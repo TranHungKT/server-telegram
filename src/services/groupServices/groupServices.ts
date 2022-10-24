@@ -174,7 +174,7 @@ class DefaultGroupService implements IGroupService {
 
       if (response.unReadMessages.length) {
         response.unReadMessages.forEach((unReadMessage) => {
-          if (unReadMessage.userId !== sender) {
+          if (unReadMessage.userId.toString() !== sender) {
             unReadMessage.numberOfUnReadMessages += 1;
           }
         });

@@ -3,13 +3,21 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { GROUP_ALREADY_EXIST, GROUP_NOT_EXIST } from '@Constants';
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
 import { GroupModel, IGroup, UserModel } from '@Models';
-import { ConflictDatabaseError, DatabaseError } from '@Utils';
+import {
+  ConflictDatabaseError,
+  DatabaseError,
+  RequestValidationPayloadError,
+} from '@Utils';
 import { generateSkip } from '@Utils';
 
-import { AddMessageToGroupItBelongToPayload } from '../messageServices/messageServiceModels';
+import {
+  AddMessageToGroupItBelongToPayload,
+  UpdateUnReadMessagePayload,
+} from '../messageServices/messageServiceModels';
 import {
   GetListMessagesResponse,
   GetListOfGroupsByIdsAndGetMemberInfo,
+  GetNumberOfUnReadMessageResponse,
   IGroupService,
   ValidateGroupExistPayload,
 } from './groupServiceModels';
@@ -22,12 +30,16 @@ class DefaultGroupService implements IGroupService {
       const response = await GroupModel.findById(groupId);
 
       if (!response) {
-        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
+        throw new RequestValidationPayloadError(
+          `GroupId: ${groupId}: ${GROUP_NOT_EXIST}`,
+        );
       }
 
       return response;
     } catch (error) {
-      throw new ConflictDatabaseError(GROUP_NOT_EXIST);
+      throw new RequestValidationPayloadError(
+        `GroupId: ${groupId}: ${GROUP_NOT_EXIST}`,
+      );
     }
   }
 
@@ -125,11 +137,7 @@ class DefaultGroupService implements IGroupService {
   }
 
   async getTotalChatCount(groupId: string): Promise<number> {
-    const response = await GroupModel.findById(groupId);
-
-    if (!response) {
-      throw new ConflictDatabaseError(GROUP_NOT_EXIST);
-    }
+    const response = await this.findGroupById(groupId);
 
     return response.messages.length;
   }
@@ -139,11 +147,7 @@ class DefaultGroupService implements IGroupService {
     messageId,
   }: AddMessageToGroupItBelongToPayload): Promise<void> {
     try {
-      const response = await GroupModel.findById(groupMessageBelongTo);
-
-      if (!response) {
-        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
-      }
+      const response = await this.findGroupById(groupMessageBelongTo);
 
       response.lastMessage = messageId;
 
@@ -151,6 +155,61 @@ class DefaultGroupService implements IGroupService {
     } catch (error) {
       throw new DatabaseError();
     }
+  }
+
+  async updateUnReadMessage({
+    groupMessageBelongTo,
+    sender,
+  }: UpdateUnReadMessagePayload): Promise<void> {
+    try {
+      const response = await this.findGroupById(groupMessageBelongTo);
+
+      if (response.unReadMessages.length) {
+        response.unReadMessages.forEach((unReadMessage) => {
+          if (unReadMessage.userId.toString() !== sender) {
+            unReadMessage.numberOfUnReadMessages += 1;
+          }
+        });
+      }
+
+      response.save();
+    } catch (error) {
+      throw new DatabaseError();
+    }
+  }
+
+  async getNumberOfUnReadMessage({
+    groupIds,
+    userId,
+  }: {
+    groupIds: string[];
+    userId: string;
+  }): Promise<GetNumberOfUnReadMessageResponse> {
+    const response = Promise.all(
+      groupIds.map(async (groupId) => {
+        try {
+          const group = await this.findGroupById(groupId);
+
+          const unReadMessageForUser = group.unReadMessages.find(
+            (unReadMessage) => unReadMessage.userId.toString() === userId,
+          );
+
+          if (!unReadMessageForUser) {
+            throw new RequestValidationPayloadError(
+              `User ${userId} does not exist in ${groupId}`,
+            );
+          }
+
+          return {
+            groupId,
+            numberOfUnReadMessage: unReadMessageForUser.numberOfUnReadMessages,
+          };
+        } catch (error) {
+          throw new DatabaseError();
+        }
+      }),
+    );
+    return response;
   }
 }
 

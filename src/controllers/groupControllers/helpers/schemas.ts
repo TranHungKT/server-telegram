@@ -17,3 +17,11 @@ export const yupGetListOfGroupSchema = yup.object({
 });
 
 export type GetListGroupQuery = yup.Asserts<typeof yupGetListOfGroupSchema>;
+
+export const yupGetNumberOfUnReadMessage = yup.object({
+  groupIds: yup.array().of(yup.string().required()).required(),
+});
+
+export type GetNumberOfUnReadMessagePayload = yup.Asserts<
+  typeof yupGetNumberOfUnReadMessage
+>;

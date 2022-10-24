@@ -3,7 +3,10 @@ import { HydratedDocument, ObjectId } from 'mongoose';
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
 import { IGroup, IMessageAfterPopulateUser } from '@Models';
 
-import { AddMessageToGroupItBelongToPayload } from '../messageServices/messageServiceModels';
+import {
+  AddMessageToGroupItBelongToPayload,
+  UpdateUnReadMessagePayload,
+} from '../messageServices/messageServiceModels';
 
 export interface ValidateGroupExistPayload {
   ids: string[];
@@ -27,6 +30,11 @@ export interface GetListMessagesResponse {
   }[];
 }
 
+export type GetNumberOfUnReadMessageResponse = {
+  groupId: string;
+  numberOfUnReadMessage: number;
+}[];
+
 export interface IGroupService {
   findGroupById(groupId: string): Promise<HydratedDocument<IGroup>>;
   validateGroupExist(payload: ValidateGroupExistPayload): Promise<void>;
@@ -42,4 +50,15 @@ export interface IGroupService {
     groupMessageBelongTo,
     messageId,
   }: AddMessageToGroupItBelongToPayload): Promise<void>;
+  updateUnReadMessage({
+    groupMessageBelongTo,
+    sender,
+  }: UpdateUnReadMessagePayload): Promise<void>;
+  getNumberOfUnReadMessage({
+    groupIds,
+    userId,
+  }: {
+    groupIds: string[];
+    userId: string;
+  }): Promise<GetNumberOfUnReadMessageResponse>;
 }

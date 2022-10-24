@@ -30,12 +30,16 @@ class DefaultGroupService implements IGroupService {
       const response = await GroupModel.findById(groupId);
 
       if (!response) {
-        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
+        throw new RequestValidationPayloadError(
+          `GroupId: ${groupId}: ${GROUP_NOT_EXIST}`,
+        );
       }
 
       return response;
     } catch (error) {
-      throw new ConflictDatabaseError(GROUP_NOT_EXIST);
+      throw new RequestValidationPayloadError(
+        `GroupId: ${groupId}: ${GROUP_NOT_EXIST}`,
+      );
     }
   }
 
@@ -133,11 +137,7 @@ class DefaultGroupService implements IGroupService {
   }
 
   async getTotalChatCount(groupId: string): Promise<number> {
-    const response = await GroupModel.findById(groupId);
-
-    if (!response) {
-      throw new ConflictDatabaseError(GROUP_NOT_EXIST);
-    }
+    const response = await this.findGroupById(groupId);
 
     return response.messages.length;
   }
@@ -147,11 +147,7 @@ class DefaultGroupService implements IGroupService {
     messageId,
   }: AddMessageToGroupItBelongToPayload): Promise<void> {
     try {
-      const response = await GroupModel.findById(groupMessageBelongTo);
-
-      if (!response) {
-        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
-      }
+      const response = await this.findGroupById(groupMessageBelongTo);
 
       response.lastMessage = messageId;
 
@@ -166,11 +162,7 @@ class DefaultGroupService implements IGroupService {
     sender,
   }: UpdateUnReadMessagePayload): Promise<void> {
     try {
-      const response = await GroupModel.findById(groupMessageBelongTo);
-
-      if (!response) {
-        throw new ConflictDatabaseError(GROUP_NOT_EXIST);
-      }
+      const response = await this.findGroupById(groupMessageBelongTo);
 
       if (response.unReadMessages.length) {
         response.unReadMessages.forEach((unReadMessage) => {
@@ -193,19 +185,10 @@ class DefaultGroupService implements IGroupService {
     groupIds: string[];
     userId: string;
   }): Promise<GetNumberOfUnReadMessageResponse> {
-    console.log(groupIds);
     const response = Promise.all(
       groupIds.map(async (groupId) => {
         try {
-          const group = await GroupModel.findById(groupId).select(
-            'unReadMessages',
-          );
-
-          if (!group) {
-            throw new RequestValidationPayloadError(
-              `Group id ${groupId} does not exist`,
-            );
-          }
+          const group = await this.findGroupById(groupId);
 
           const unReadMessageForUser = group.unReadMessages.find(
             (unReadMessage) => unReadMessage.userId.toString() === userId,

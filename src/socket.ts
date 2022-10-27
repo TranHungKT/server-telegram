@@ -117,19 +117,21 @@ export default class SocketServer {
 
   async receivedMessage({
     groupId,
-    messageId,
+    messageIds,
     socket,
   }: {
     groupId: string;
-    messageId: string;
+    messageIds: string[];
     socket: socket.Socket;
   }) {
     try {
-      await messageService.updateMessageToReceivedStatus(messageId);
+      messageIds.forEach(async (messageId) => {
+        await messageService.updateMessageToReceivedStatus(messageId);
+      });
 
       return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.RECEIVED_MESSAGE, {
         groupId,
-        messageId,
+        messageIds,
       });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);

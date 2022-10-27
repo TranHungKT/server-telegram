@@ -211,6 +211,34 @@ class DefaultGroupService implements IGroupService {
     );
     return response;
   }
+  async readAllMessage({
+    groupId,
+    userId,
+  }: {
+    groupId: string;
+    userId: string;
+  }): Promise<void> {
+    try {
+      const group = await this.findGroupById(groupId);
+
+      const indexOfUnReadMessageForUser = group.unReadMessages.findIndex(
+        (unReadMessage) => unReadMessage.userId.toString() === userId,
+      );
+
+      if (indexOfUnReadMessageForUser === -1) {
+        throw new RequestValidationPayloadError(
+          `User ${userId} does not exist in ${groupId}`,
+        );
+      }
+
+      group.unReadMessages[
+        indexOfUnReadMessageForUser
+      ].numberOfUnReadMessages = 0;
+      group.save();
+    } catch (error) {
+      throw new DatabaseError();
+    }
+  }
 }
 
 export const groupServices = new DefaultGroupService();

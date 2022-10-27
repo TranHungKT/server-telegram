@@ -43,6 +43,7 @@ export const getMessagesController = async (
 
     if (response.length === 0) {
       res.status(200).send({
+        groupId: groupId,
         count: 0,
         list: [],
       });
@@ -52,6 +53,7 @@ export const getMessagesController = async (
     const totalChatCount = await groupServices.getTotalChatCount(groupId);
 
     return res.status(200).send({
+      groupId: groupId,
       count: totalChatCount,
       list: normalizedResponse,
     });

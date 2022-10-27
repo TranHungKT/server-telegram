@@ -5,7 +5,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
-import { messageService, userService } from '@Services';
+import { groupServices, messageService, userService } from '@Services';
 import { SocketError, normalizedUser } from '@Utils';
 
 export default class SocketServer {
@@ -44,6 +44,9 @@ export default class SocketServer {
               break;
             case SOCKET_EVENTS.RECEIVED_MESSAGE:
               await this.receivedMessage({ ...payload, socket });
+              break;
+            case SOCKET_EVENTS.READ_MESSAGE:
+              await this.readMessage({ ...payload, socket });
               break;
           }
         } catch (error) {
@@ -114,19 +117,42 @@ export default class SocketServer {
 
   async receivedMessage({
     groupId,
-    messageId,
+    messageIds,
     socket,
   }: {
     groupId: string;
-    messageId: string;
+    messageIds: string[];
     socket: socket.Socket;
   }) {
     try {
-      await messageService.updateMessageToReceivedStatus(messageId);
+      messageIds.forEach(async (messageId) => {
+        await messageService.updateMessageToReceivedStatus(messageId);
+      });
 
       return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.RECEIVED_MESSAGE, {
         groupId,
-        messageId,
+        messageIds,
+      });
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  async readMessage({
+    groupId,
+    userId,
+    socket,
+  }: {
+    groupId: string;
+    userId: string;
+    socket: socket.Socket;
+  }) {
+    try {
+      await groupServices.readAllMessage({ groupId, userId });
+
+      return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.READ_MESSAGE, {
+        groupId,
+        userId,
       });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);

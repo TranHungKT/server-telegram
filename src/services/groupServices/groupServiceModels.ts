@@ -61,4 +61,11 @@ export interface IGroupService {
     groupIds: string[];
     userId: string;
   }): Promise<GetNumberOfUnReadMessageResponse>;
+  readAllMessage({
+    groupId,
+    userId,
+  }: {
+    groupId: string;
+    userId: string;
+  }): Promise<void>;
 }

@@ -4,7 +4,7 @@ export const SOCKET_EVENTS = {
   SEND_MESSAGE: 'send-message',
   GET_MESSAGE: 'get-message',
   RECEIVED_MESSAGE: 'received-message',
-  READ_MESSAGE: 'read-message',
+  SEEN_MESSAGE: 'seen-message',
   SOCKET_ERROR: 'socket-error',
   TYPING: 'typing',
   UN_TYPING: 'un-typing',

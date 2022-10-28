@@ -45,8 +45,8 @@ export default class SocketServer {
             case SOCKET_EVENTS.RECEIVED_MESSAGE:
               await this.receivedMessage({ ...payload, socket });
               break;
-            case SOCKET_EVENTS.READ_MESSAGE:
-              await this.readMessage({ ...payload, socket });
+            case SOCKET_EVENTS.SEEN_MESSAGE:
+              await this.seenMessage({ ...payload, socket });
               break;
           }
         } catch (error) {
@@ -138,7 +138,7 @@ export default class SocketServer {
     }
   }
 
-  async readMessage({
+  async seenMessage({
     groupId,
     userId,
     socket,
@@ -148,9 +148,9 @@ export default class SocketServer {
     socket: socket.Socket;
   }) {
     try {
-      await groupServices.readAllMessage({ groupId, userId });
+      await groupServices.seenAllMessage({ groupId, userId });
 
-      return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.READ_MESSAGE, {
+      return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.SEEN_MESSAGE, {
         groupId,
         userId,
       });

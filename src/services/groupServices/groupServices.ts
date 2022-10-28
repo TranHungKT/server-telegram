@@ -211,7 +211,7 @@ class DefaultGroupService implements IGroupService {
     );
     return response;
   }
-  async readAllMessage({
+  async seenAllMessage({
     groupId,
     userId,
   }: {

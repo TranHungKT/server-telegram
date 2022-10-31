@@ -33,14 +33,4 @@ export const GroupSchema = new Schema<IGroup>({
     ref: SCHEMA_NAME.MESSAGE,
     required: false,
   },
-  unReadMessages: [
-    {
-      userId: {
-        type: Schema.Types.ObjectId,
-        ref: SCHEMA_NAME.USER,
-        required: false,
-      },
-      numberOfUnReadMessages: Number,
-    },
-  ],
 });

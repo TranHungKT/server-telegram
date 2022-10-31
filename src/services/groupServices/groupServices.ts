@@ -10,14 +10,10 @@ import {
 } from '@Utils';
 import { generateSkip } from '@Utils';
 
-import {
-  AddMessageToGroupItBelongToPayload,
-  UpdateUnReadMessagePayload,
-} from '../messageServices/messageServiceModels';
+import { AddMessageToGroupItBelongToPayload } from '../messageServices/messageServiceModels';
 import {
   GetListMessagesResponse,
   GetListOfGroupsByIdsAndGetMemberInfo,
-  GetNumberOfUnReadMessageResponse,
   IGroupService,
   ValidateGroupExistPayload,
 } from './groupServiceModels';
@@ -152,89 +148,6 @@ class DefaultGroupService implements IGroupService {
       response.lastMessage = messageId;
 
       response.save();
-    } catch (error) {
-      throw new DatabaseError();
-    }
-  }
-
-  async updateUnReadMessage({
-    groupMessageBelongTo,
-    sender,
-  }: UpdateUnReadMessagePayload): Promise<void> {
-    try {
-      const response = await this.findGroupById(groupMessageBelongTo);
-
-      if (response.unReadMessages.length) {
-        response.unReadMessages.forEach((unReadMessage) => {
-          if (unReadMessage.userId.toString() !== sender) {
-            unReadMessage.numberOfUnReadMessages += 1;
-          }
-        });
-      }
-
-      response.save();
-    } catch (error) {
-      throw new DatabaseError();
-    }
-  }
-
-  async getNumberOfUnReadMessage({
-    groupIds,
-    userId,
-  }: {
-    groupIds: string[];
-    userId: string;
-  }): Promise<GetNumberOfUnReadMessageResponse> {
-    const response = Promise.all(
-      groupIds.map(async (groupId) => {
-        try {
-          const group = await this.findGroupById(groupId);
-
-          const unReadMessageForUser = group.unReadMessages.find(
-            (unReadMessage) => unReadMessage.userId.toString() === userId,
-          );
-
-          if (!unReadMessageForUser) {
-            throw new RequestValidationPayloadError(
-              `User ${userId} does not exist in ${groupId}`,
-            );
-          }
-
-          return {
-            groupId,
-            numberOfUnReadMessage: unReadMessageForUser.numberOfUnReadMessages,
-          };
-        } catch (error) {
-          throw new DatabaseError();
-        }
-      }),
-    );
-    return response;
-  }
-  async seenAllMessage({
-    groupId,
-    userId,
-  }: {
-    groupId: string;
-    userId: string;
-  }): Promise<void> {
-    try {
-      const group = await this.findGroupById(groupId);
-
-      const indexOfUnReadMessageForUser = group.unReadMessages.findIndex(
-        (unReadMessage) => unReadMessage.userId.toString() === userId,
-      );
-
-      if (indexOfUnReadMessageForUser === -1) {
-        throw new RequestValidationPayloadError(
-          `User ${userId} does not exist in ${groupId}`,
-        );
-      }
-
-      group.unReadMessages[
-        indexOfUnReadMessageForUser
-      ].numberOfUnReadMessages = 0;
-      group.save();
     } catch (error) {
       throw new DatabaseError();
     }

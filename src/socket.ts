@@ -5,7 +5,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
-import { groupServices, messageService, userService } from '@Services';
+import { messageService, userService } from '@Services';
 import { SocketError, normalizedUser } from '@Utils';
 
 export default class SocketServer {
@@ -143,7 +143,6 @@ export default class SocketServer {
 
   async seenMessage({
     groupId,
-    userId,
     messageIds,
     socket,
   }: {
@@ -153,7 +152,6 @@ export default class SocketServer {
     socket: socket.Socket;
   }) {
     try {
-      await groupServices.seenAllMessage({ groupId, userId });
       messageIds.forEach(async (messageId) => {
         await messageService.updateMessageStatus({ messageId, status: 'seen' });
       });

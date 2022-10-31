@@ -27,10 +27,6 @@ export interface IGroup {
   typeOfGroup: TypeOfGroup;
   lastUpdatedAt?: Date;
   lastMessage?: string;
-  unReadMessages: {
-    userId: string;
-    numberOfUnReadMessages: number;
-  }[];
 }
 
 export const GroupModel = model<IGroup>(SCHEMA_NAME.GROUP, GroupSchema);

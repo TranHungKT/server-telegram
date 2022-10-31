@@ -149,7 +149,6 @@ export default class SocketServer {
     socket,
   }: {
     groupId: string;
-    userId: string;
     messageIds: string[];
     socket: socket.Socket;
   }) {

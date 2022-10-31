@@ -24,7 +24,7 @@ export class DefaultMessageService implements IMessageService {
         sent: true,
         received: false,
       });
-      newMessage.sent = true;
+
       await newMessage.save();
       return newMessage;
     } catch (error) {

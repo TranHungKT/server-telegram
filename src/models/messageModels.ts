@@ -15,3 +15,9 @@ export interface IMessageAfterPopulateUserAndMapForFronEnd
     name: string;
   };
 }
+
+export enum MessageStatus {
+  RECEIVED = 'received',
+  SENT = 'sent',
+  SEEN = 'seen',
+}

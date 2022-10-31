@@ -3,7 +3,6 @@
 // STEP 2: Create new message and save to message db
 // STEP 3: Update last message to group
 // STEP 4: Add message to group
-// STEP 5: Update unreadMessage
 // STEP 6: Populate user data and response
 import { HydratedDocument } from 'mongoose';
 
@@ -36,11 +35,6 @@ export const sendMessageController = async ({
     await groupServices.updateLastMessage({
       messageId: newMessage._id.toString(),
       groupMessageBelongTo,
-    });
-
-    await groupServices.updateUnReadMessage({
-      groupMessageBelongTo,
-      sender: message.user,
     });
 
     // Step 4

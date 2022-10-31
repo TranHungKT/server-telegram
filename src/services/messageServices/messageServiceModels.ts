@@ -1,7 +1,7 @@
 import { HydratedDocument } from 'mongoose';
 
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers';
-import { IMessage } from '@Models';
+import { IMessage, MessageStatus } from '@Models';
 
 export interface CreateNewMessagePayload {
   newMessageData: SendNewMessagePayload;
@@ -10,11 +10,6 @@ export interface CreateNewMessagePayload {
 export interface AddMessageToGroupItBelongToPayload {
   messageId: string;
   groupMessageBelongTo: string;
-}
-
-export interface UpdateUnReadMessagePayload {
-  groupMessageBelongTo: string;
-  sender: string;
 }
 
 export interface IMessageService {
@@ -27,7 +22,11 @@ export interface IMessageService {
     groupMessageBelongTo,
   }: AddMessageToGroupItBelongToPayload): Promise<void>;
 
-  updateMessageToReceivedStatus(
-    messageId: string,
-  ): Promise<HydratedDocument<IMessage>>;
+  updateMessageStatus({
+    messageId,
+    status,
+  }: {
+    messageId: string;
+    status: MessageStatus;
+  }): Promise<HydratedDocument<IMessage>>;
 }

@@ -5,8 +5,10 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
-import { groupServices, messageService, userService } from '@Services';
+import { messageService, userService } from '@Services';
 import { SocketError, normalizedUser } from '@Utils';
+
+import { MessageStatus } from './models/messageModels';
 
 export default class SocketServer {
   private io: socket.Server<
@@ -45,8 +47,8 @@ export default class SocketServer {
             case SOCKET_EVENTS.RECEIVED_MESSAGE:
               await this.receivedMessage({ ...payload, socket });
               break;
-            case SOCKET_EVENTS.READ_MESSAGE:
-              await this.readMessage({ ...payload, socket });
+            case SOCKET_EVENTS.SEEN_MESSAGE:
+              await this.seenMessage({ ...payload, socket });
               break;
           }
         } catch (error) {
@@ -126,7 +128,10 @@ export default class SocketServer {
   }) {
     try {
       messageIds.forEach(async (messageId) => {
-        await messageService.updateMessageToReceivedStatus(messageId);
+        await messageService.updateMessageStatus({
+          messageId,
+          status: MessageStatus.RECEIVED,
+        });
       });
 
       return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.RECEIVED_MESSAGE, {
@@ -138,21 +143,25 @@ export default class SocketServer {
     }
   }
 
-  async readMessage({
+  async seenMessage({
     groupId,
-    userId,
+    messageIds,
     socket,
   }: {
     groupId: string;
-    userId: string;
+    messageIds: string[];
     socket: socket.Socket;
   }) {
     try {
-      await groupServices.readAllMessage({ groupId, userId });
-
-      return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.READ_MESSAGE, {
+      messageIds.forEach(async (messageId) => {
+        await messageService.updateMessageStatus({
+          messageId,
+          status: MessageStatus.SEEN,
+        });
+      });
+      return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.SEEN_MESSAGE, {
         groupId,
-        userId,
+        messageIds,
       });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);

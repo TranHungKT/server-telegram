@@ -1,7 +1,7 @@
 import { HydratedDocument } from 'mongoose';
 
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers';
-import { IMessage } from '@Models';
+import { IMessage, MessageStatus } from '@Models';
 
 export interface CreateNewMessagePayload {
   newMessageData: SendNewMessagePayload;
@@ -27,6 +27,6 @@ export interface IMessageService {
     status,
   }: {
     messageId: string;
-    status: 'received' | 'seen';
+    status: MessageStatus;
   }): Promise<HydratedDocument<IMessage>>;
 }

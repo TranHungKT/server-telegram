@@ -1,7 +1,7 @@
 import { HydratedDocument } from 'mongoose';
 
 import { CAN_NOT_FIND_MESSAGE } from '@Constants';
-import { GroupModel, IMessage, MessageModel } from '@Models';
+import { GroupModel, IMessage, MessageModel, MessageStatus } from '@Models';
 import { DatabaseError } from '@Utils';
 
 import {
@@ -51,7 +51,7 @@ export class DefaultMessageService implements IMessageService {
     status,
   }: {
     messageId: string;
-    status: 'received' | 'seen';
+    status: MessageStatus;
   }) {
     try {
       const message = await MessageModel.findById(messageId);

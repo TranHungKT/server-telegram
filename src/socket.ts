@@ -8,6 +8,8 @@ import { sendMessageController } from '@Controllers/socketControllers/sendMessag
 import { messageService, userService } from '@Services';
 import { SocketError, normalizedUser } from '@Utils';
 
+import { MessageStatus } from './models/messageModels';
+
 export default class SocketServer {
   private io: socket.Server<
     DefaultEventsMap,
@@ -128,7 +130,7 @@ export default class SocketServer {
       messageIds.forEach(async (messageId) => {
         await messageService.updateMessageStatus({
           messageId,
-          status: 'received',
+          status: MessageStatus.RECEIVED,
         });
       });
 
@@ -153,7 +155,10 @@ export default class SocketServer {
   }) {
     try {
       messageIds.forEach(async (messageId) => {
-        await messageService.updateMessageStatus({ messageId, status: 'seen' });
+        await messageService.updateMessageStatus({
+          messageId,
+          status: MessageStatus.SEEN,
+        });
       });
       return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.SEEN_MESSAGE, {
         groupId,

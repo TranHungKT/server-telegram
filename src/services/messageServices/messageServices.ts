@@ -17,7 +17,13 @@ export class DefaultMessageService implements IMessageService {
     newMessageData,
   }: CreateNewMessagePayload): Promise<HydratedDocument<IMessage>> {
     try {
-      const newMessage = new MessageModel(newMessageData);
+      const newMessage = new MessageModel({
+        ...newMessageData,
+        createdAt: new Date(),
+        seen: false,
+        sent: true,
+        received: false,
+      });
       newMessage.sent = true;
       await newMessage.save();
       return newMessage;
@@ -40,11 +46,17 @@ export class DefaultMessageService implements IMessageService {
     }
   }
 
-  async updateMessageToReceivedStatus(messageId: string) {
+  async updateMessageStatus({
+    messageId,
+    status,
+  }: {
+    messageId: string;
+    status: 'received' | 'seen';
+  }) {
     try {
       const message = await MessageModel.findById(messageId);
       if (message) {
-        message.received = true;
+        message[status] = true;
         message.save();
 
         return message;

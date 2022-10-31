@@ -42,6 +42,7 @@ export interface IMessage {
   sent?: boolean;
   received?: boolean;
   pending?: boolean;
+  seen?: boolean;
 }
 
 export const MessageModel = model<IMessage>(SCHEMA_NAME.MESSAGE, MessageSchema);

@@ -126,7 +126,10 @@ export default class SocketServer {
   }) {
     try {
       messageIds.forEach(async (messageId) => {
-        await messageService.updateMessageToReceivedStatus(messageId);
+        await messageService.updateMessageStatus({
+          messageId,
+          status: 'received',
+        });
       });
 
       return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.RECEIVED_MESSAGE, {
@@ -141,18 +144,22 @@ export default class SocketServer {
   async seenMessage({
     groupId,
     userId,
+    messageIds,
     socket,
   }: {
     groupId: string;
     userId: string;
+    messageIds: string[];
     socket: socket.Socket;
   }) {
     try {
       await groupServices.seenAllMessage({ groupId, userId });
-
+      messageIds.forEach(async (messageId) => {
+        await messageService.updateMessageStatus({ messageId, status: 'seen' });
+      });
       return socket.broadcast.to(groupId).emit(SOCKET_EVENTS.SEEN_MESSAGE, {
         groupId,
-        userId,
+        messageIds,
       });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);

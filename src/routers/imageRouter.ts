@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
@@ -9,8 +10,8 @@ const imageRouter = express.Router();
 
 const s3 = new S3Client({
   credentials: {
-    accessKeyId: 'AKIATROZHFGNOI6M7CVR',
-    secretAccessKey: '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',
+    accessKeyId: process.env.S3_ACCESS_KEY || '',
+    secretAccessKey: process.env.S3_SECRET_KEY || '',
   },
   region: 'ap-southeast-1',
 });
@@ -19,7 +20,7 @@ const upload = multer({
   storage: multerS3({
     s3: s3 as any,
     acl: 'public-read',
-    bucket: 'telegram-tran-hung-ver-2',
+    bucket: process.env.S3_BUCKET_NAME || '',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     metadata: function (req, file, cb) {
       cb(null, { fieldName: file.fieldname });

@@ -33,7 +33,7 @@ export default class App {
         accessKeyId: process.env.S3_ACCESS_KEY || '',
         secretAccessKey: process.env.S3_SECRET_KEY || '',
       },
-      region: 'ap-southeast-1',
+      region: process.env.S3_REGION || '',
     });
   }
 

@@ -32,13 +32,14 @@ export interface IGroup {
 export const GroupModel = model<IGroup>(SCHEMA_NAME.GROUP, GroupSchema);
 
 export interface IMessage {
-  text: string;
+  text?: string;
   createdAt: Date;
   user: Schema.Types.ObjectId;
   sent?: boolean;
   received?: boolean;
   pending?: boolean;
   seen?: boolean;
+  image?: string;
 }
 
 export const MessageModel = model<IMessage>(SCHEMA_NAME.MESSAGE, MessageSchema);

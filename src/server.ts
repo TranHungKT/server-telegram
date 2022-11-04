@@ -7,9 +7,9 @@ import http from 'http';
 import 'module-alias/register';
 import passport from 'passport';
 
-// import './consumer'
 import { initDb } from '@Configs';
 import { CustomError } from '@Utils';
+import { S3Client } from '@aws-sdk/client-s3';
 
 import { router } from './routers';
 import SocketServer from './socket';
@@ -19,10 +19,18 @@ const PORT = process.env.PORT || 3000;
 export default class App {
   private server: Express;
   private app: http.Server;
+  private s3: any;
+  private upload: any;
 
   constructor() {
     this.server = express();
     this.app = http.createServer(this.server);
+    this.s3 = new S3Client({
+      credentials: {
+        accessKeyId: 'AKIATROZHFGNOI6M7CVR',
+        secretAccessKey: '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',
+      },
+    });
   }
 
   private async initServer() {
@@ -41,6 +49,7 @@ export default class App {
     this.server.use(passport.session());
 
     this.server.use(express.json());
+
     this.server.use(router);
 
     this.server.use(
@@ -51,6 +60,7 @@ export default class App {
             .send({ error: error.serializeErrors() });
         }
 
+        console.log(error);
         return res.status(400).send({
           error: [
             {

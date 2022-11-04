@@ -26,6 +26,7 @@ export class DefaultMessageService implements IMessageService {
       });
 
       await newMessage.save();
+
       return newMessage;
     } catch (error) {
       throw new DatabaseError();

@@ -94,6 +94,7 @@ export default class SocketServer {
         groupId: payload.roomId,
       });
     } catch (error) {
+      console.log(error);
       throw new SocketError(SOCKET_ERROR_TYPE.SEND_MESSAGE_ERROR);
     }
   }

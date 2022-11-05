@@ -7,11 +7,10 @@ import http from 'http';
 import 'module-alias/register';
 import passport from 'passport';
 
-// import './consumer'
 import { initDb } from '@Configs';
 import { CustomError } from '@Utils';
 
-import { router } from './routers';
+import { routers } from './routers';
 import SocketServer from './socket';
 
 const PORT = process.env.PORT || 3000;
@@ -41,7 +40,8 @@ export default class App {
     this.server.use(passport.session());
 
     this.server.use(express.json());
-    this.server.use(router);
+
+    this.server.use(routers);
 
     this.server.use(
       (error: Error, req: Request, res: Response, _: NextFunction) => {
@@ -51,6 +51,7 @@ export default class App {
             .send({ error: error.serializeErrors() });
         }
 
+        console.log(error);
         return res.status(400).send({
           error: [
             {

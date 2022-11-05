@@ -17,4 +17,5 @@ export const MessageSchema = new Schema<IMessage>({
   received: Boolean,
   pending: Boolean,
   seen: Boolean,
+  image: String,
 });

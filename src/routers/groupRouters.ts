@@ -6,18 +6,18 @@ import {
 } from '@Controllers/groupControllers/';
 import { verifyTokenMiddlewares } from '@Middlewares';
 
-const groupRouter = express.Router();
+const groupRouters = express.Router();
 
-groupRouter.post(
+groupRouters.post(
   '/create-new-group',
   verifyTokenMiddlewares,
   createNewGroupController,
 );
 
-groupRouter.get(
+groupRouters.get(
   '/get-list-groups',
   verifyTokenMiddlewares,
   getListGroupsController,
 );
 
-export { groupRouter };
+export { groupRouters };

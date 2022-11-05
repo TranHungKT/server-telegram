@@ -5,7 +5,7 @@ export const normalizedResponseMessage = (
   messages: GetListMessagesResponse,
 ) => {
   return messages.messages.map((message) => {
-    const { _id, text, createdAt, user, sent, received, pending, seen } =
+    const { _id, text, createdAt, user, sent, received, pending, seen, image } =
       message._id;
 
     return {
@@ -17,6 +17,7 @@ export const normalizedResponseMessage = (
       received,
       pending,
       seen,
+      image,
     };
   });
 };

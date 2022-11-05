@@ -51,7 +51,7 @@ export const sendMessageController = async ({
     });
 
     // Step 6
-    const { _id, text, createdAt, user, sent, received, pending } =
+    const { _id, text, createdAt, user, sent, received, pending, image } =
       newMessageAfterPopulatedUser;
 
     return {
@@ -62,6 +62,7 @@ export const sendMessageController = async ({
       sent: sent,
       received: received,
       pending: pending,
+      image: image,
     };
   } catch (error) {
     // TODO: ADD PATTERN OF THROW ERROR BY SOCKET

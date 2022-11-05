@@ -5,16 +5,12 @@ import { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
 import http from 'http';
 import 'module-alias/register';
-import multer from 'multer';
-import multerS3 from 'multer-s3';
 import passport from 'passport';
 
 import { initDb } from '@Configs';
 import { CustomError } from '@Utils';
-import { S3Client } from '@aws-sdk/client-s3';
 
-import { verifyTokenMiddlewares } from './middlewares/verifyTokenMiddlewares';
-import { router } from './routers';
+import { routers } from './routers';
 import SocketServer from './socket';
 
 const PORT = process.env.PORT || 3000;
@@ -22,24 +18,13 @@ const PORT = process.env.PORT || 3000;
 export default class App {
   private server: Express;
   private app: http.Server;
-  private s3: S3Client;
-  private upload: any;
 
   constructor() {
     this.server = express();
     this.app = http.createServer(this.server);
-    this.s3 = new S3Client({
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY || '',
-        secretAccessKey: process.env.S3_SECRET_KEY || '',
-      },
-      region: process.env.S3_REGION || '',
-    });
   }
 
   private async initServer() {
-    this.upload = await this.initUploadMulter();
-
     this.server.use(cors());
     this.server.use(
       session({
@@ -56,16 +41,7 @@ export default class App {
 
     this.server.use(express.json());
 
-    this.server.use(router);
-
-    this.server.post(
-      '/upload-photo',
-      verifyTokenMiddlewares,
-      this.upload.single('photos'),
-      (req, res) => {
-        return res.status(200).send({ fileUrl: (req.file as any).location });
-      },
-    );
+    this.server.use(routers);
 
     this.server.use(
       (error: Error, req: Request, res: Response, _: NextFunction) => {
@@ -90,23 +66,6 @@ export default class App {
   async initSocketServer() {
     const socket = new SocketServer(this.app);
     socket.connectSocket();
-  }
-
-  async initUploadMulter() {
-    return multer({
-      storage: multerS3({
-        s3: this.s3 as any,
-        acl: 'public-read',
-        bucket: process.env.S3_BUCKET_NAME || '',
-        contentType: multerS3.AUTO_CONTENT_TYPE,
-        metadata: function (req, file, cb) {
-          cb(null, { fieldName: file.fieldname });
-        },
-        key: function (req, file, cb) {
-          cb(null, `pictures/${Date.now().toString()}`);
-        },
-      }),
-    });
   }
 
   async start() {

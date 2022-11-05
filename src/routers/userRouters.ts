@@ -7,11 +7,11 @@ import { RequestUserAfterAuthenticate } from '@Models';
 import { getBaseUserController } from '../controllers/userControllers';
 import '../controllers/userControllers/userController';
 
-const userRouter = express.Router();
+const userRouters = express.Router();
 
-userRouter.get('/auth/facebook', passport.authenticate('facebook'));
+userRouters.get('/auth/facebook', passport.authenticate('facebook'));
 
-userRouter.get(
+userRouters.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/auth/facebook' }),
   (req: RequestUserAfterAuthenticate, res) => {
@@ -19,10 +19,10 @@ userRouter.get(
   },
 );
 
-userRouter.get('/fail', (req, res) => {
+userRouters.get('/fail', (req, res) => {
   res.send('Failed attempt');
 });
 
-userRouter.get('/user-data', verifyTokenMiddlewares, getBaseUserController);
+userRouters.get('/user-data', verifyTokenMiddlewares, getBaseUserController);
 
-export { userRouter };
+export { userRouters };

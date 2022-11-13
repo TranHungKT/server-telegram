@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import passport from 'passport';
 import strategy from 'passport-facebook';
 
-import { IUser, UserModel, UserStatus } from '@Models';
+import { IUser, UserModel } from '@Models';
 import { userService } from '@Services';
 
 const FacebookStrategy = strategy.Strategy;
@@ -32,7 +32,6 @@ passport.use(
         email,
         firstName: first_name,
         lastName: last_name,
-        status: UserStatus.ONLINE,
         avatarUrl: picture.data.url,
         groupUserBelongTo: [],
         oAuthId: id,

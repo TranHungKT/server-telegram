@@ -2,13 +2,19 @@ import http from 'http';
 import socket from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
-import { SOCKET_ERROR_TYPE, SOCKET_EVENTS } from '@Constants';
+import {
+  SOCKET_ERROR_TYPE,
+  SOCKET_EVENTS,
+  UNAUTHORIZED_MESSAGE,
+} from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
 import { messageService, userService } from '@Services';
 import { SocketError, normalizedUser } from '@Utils';
 
 import { MessageStatus } from './models/messageModels';
+
+export const connectedSocket: string[] = [];
 
 export default class SocketServer {
   private io: socket.Server<
@@ -22,11 +28,28 @@ export default class SocketServer {
     this.io = new socket.Server(expressServer, {
       path: '/socket',
       transports: ['websocket'],
+      pingTimeout: 10000,
+      pingInterval: 5000,
     });
   }
 
   async connectSocket() {
     this.io.on('connection', (socket) => {
+      try {
+        const token = socket.handshake.auth.token;
+
+        if (!token) {
+          throw new SocketError(UNAUTHORIZED_MESSAGE);
+        }
+        this.handleSocketConnect(token);
+
+        socket.on('disconnect', () => {
+          this.handleSocketDisconnect(token);
+        });
+      } catch (error) {
+        this.handleSocketError(error as SocketError, socket.id);
+      }
+
       socket.onAny(async (event, ...args) => {
         try {
           const payload = args[0];
@@ -166,6 +189,34 @@ export default class SocketServer {
       });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  async handleSocketConnect(token: string) {
+    try {
+      const user = await userService.findUserByToken(token);
+
+      if (!connectedSocket.includes(user._id.toString())) {
+        connectedSocket.push(user._id.toString());
+      }
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.USER_NOT_EXIST);
+    }
+  }
+
+  async handleSocketDisconnect(token: string) {
+    try {
+      const user = await userService.findUserByToken(token);
+
+      const index = connectedSocket.findIndex(
+        (id) => user._id.toString() === id,
+      );
+
+      if (index !== -1) {
+        return connectedSocket.splice(index, 1);
+      }
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.USER_NOT_EXIST);
     }
   }
 }

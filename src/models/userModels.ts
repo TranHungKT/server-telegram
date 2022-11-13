@@ -7,6 +7,6 @@ export interface RequestUserAfterAuthenticate extends Request {
 }
 
 export enum UserStatus {
-  OFFLINE = 'OFFLINE',
-  ONLINE = 'ONLINE',
+  OFFLINE = 1,
+  ONLINE,
 }

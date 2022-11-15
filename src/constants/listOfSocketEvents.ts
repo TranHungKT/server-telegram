@@ -10,3 +10,5 @@ export const SOCKET_EVENTS = {
   UN_TYPING: 'un-typing',
   HEART_BEAT: 'heart-beat',
 };
+
+export const SOCKET_CONNECT_USERS = 'SOCKET_CONNECT_USERS';

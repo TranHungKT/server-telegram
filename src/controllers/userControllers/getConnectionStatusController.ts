@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { SOCKET_CONNECT_USERS } from '@Constants';
 import { UserStatus } from '@Models';
-import { validateRequest } from '@Utils';
+import { getRedisValue, validateRequest } from '@Utils';
 
-import { connectedSocket } from '../../socket';
 import {
   GetConnectionStatusPayload,
   yupGetConnectionStatusSchema,
@@ -16,6 +16,7 @@ export const getConnectionStatusController = async (
 ) => {
   try {
     await validateRequest(req.body, yupGetConnectionStatusSchema);
+    const connectedSocket: string[] = await getRedisValue(SOCKET_CONNECT_USERS);
 
     const result: Record<string, UserStatus> = {};
 

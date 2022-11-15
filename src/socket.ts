@@ -1,16 +1,24 @@
 import http from 'http';
+import { HydratedDocument } from 'mongoose';
 import socket from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import {
+  SOCKET_CONNECT_USERS,
   SOCKET_ERROR_TYPE,
   SOCKET_EVENTS,
   UNAUTHORIZED_MESSAGE,
 } from '@Constants';
 import { SendNewMessagePayload } from '@Controllers/socketControllers/helpers/schemas';
 import { sendMessageController } from '@Controllers/socketControllers/sendMessageController';
+import { IUser } from '@Models';
 import { messageService, userService } from '@Services';
-import { SocketError, normalizedUser } from '@Utils';
+import {
+  SocketError,
+  getRedisValue,
+  normalizedUser,
+  setRedisValue,
+} from '@Utils';
 
 import { MessageStatus } from './models/messageModels';
 
@@ -38,10 +46,11 @@ export default class SocketServer {
       try {
         const token = socket.handshake.auth.token;
 
-        if (!token) {
-          throw new SocketError(UNAUTHORIZED_MESSAGE);
-        }
-        await this.handleSocketConnect(token);
+        const user = await this.verifySocketConnect(token);
+
+        this.setSocketAuth({ user, socket });
+
+        await this.handleSocketConnect(user._id.toString());
         next();
       } catch (error) {
         this.handleSocketError(error as SocketError, socket.id);
@@ -50,8 +59,8 @@ export default class SocketServer {
 
     this.io.on('connection', (socket) => {
       socket.on('disconnect', () => {
-        const token = socket.handshake.auth.token;
-        this.handleSocketDisconnect(token);
+        console.log('disconnect', socket.data);
+        this.handleSocketDisconnect(socket.data.userId);
       });
       socket.onAny(async (event, ...args) => {
         try {
@@ -196,25 +205,55 @@ export default class SocketServer {
     }
   }
 
-  async handleSocketConnect(token: string) {
+  async verifySocketConnect(token: string) {
     try {
-      const user = await userService.findUserByToken(token);
+      if (!token) {
+        throw new SocketError(UNAUTHORIZED_MESSAGE);
+      }
 
-      if (!connectedSocket.includes(user._id.toString())) {
-        connectedSocket.push(user._id.toString());
+      return await userService.findUserByToken(token);
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.USER_NOT_EXIST);
+    }
+  }
+
+  setSocketAuth({
+    user,
+    socket,
+  }: {
+    user: HydratedDocument<IUser>;
+    socket: socket.Socket;
+  }) {
+    socket.data.userId = user._id.toString();
+  }
+
+  async handleSocketConnect(userId: string) {
+    try {
+      let connectedSocket: string[] | null = await getRedisValue(
+        SOCKET_CONNECT_USERS,
+      );
+
+      if (!connectedSocket) {
+        setRedisValue(SOCKET_CONNECT_USERS, JSON.stringify([]));
+        connectedSocket = [];
+      }
+
+      if (!connectedSocket.includes(userId)) {
+        connectedSocket.push(userId);
+        setRedisValue(SOCKET_CONNECT_USERS, JSON.stringify(connectedSocket));
       }
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.USER_NOT_EXIST);
     }
   }
 
-  async handleSocketDisconnect(token: string) {
+  async handleSocketDisconnect(userId: string) {
     try {
-      const user = await userService.findUserByToken(token);
-
-      const index = connectedSocket.findIndex(
-        (id) => user._id.toString() === id,
+      const connectedSocket: string[] = await getRedisValue(
+        SOCKET_CONNECT_USERS,
       );
+
+      const index = connectedSocket.findIndex((id) => userId === id);
 
       if (index !== -1) {
         return connectedSocket.splice(index, 1);

@@ -34,28 +34,32 @@ export default class SocketServer {
   }
 
   async connectSocket() {
-    this.io.on('connection', (socket) => {
+    this.io.use(async (socket, next) => {
       try {
         const token = socket.handshake.auth.token;
 
         if (!token) {
           throw new SocketError(UNAUTHORIZED_MESSAGE);
         }
-        this.handleSocketConnect(token);
-
-        socket.on('disconnect', () => {
-          this.handleSocketDisconnect(token);
-        });
+        await this.handleSocketConnect(token);
+        next();
       } catch (error) {
         this.handleSocketError(error as SocketError, socket.id);
       }
+    });
 
+    this.io.on('connection', (socket) => {
+      socket.on('disconnect', () => {
+        const token = socket.handshake.auth.token;
+        this.handleSocketDisconnect(token);
+      });
       socket.onAny(async (event, ...args) => {
         try {
           const payload = args[0];
           console.log('payload', event, payload);
           switch (event) {
             case SOCKET_EVENTS.JOIN_ROOM:
+              console.log(socket.id);
               await this.joinRoom({ socket, roomId: payload });
               break;
             case SOCKET_EVENTS.SEND_MESSAGE:

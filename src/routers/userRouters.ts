@@ -26,7 +26,7 @@ userRouters.get('/fail', (req, res) => {
 
 userRouters.get('/user-data', verifyTokenMiddlewares, getBaseUserController);
 
-userRouters.get(
+userRouters.post(
   '/connect-status',
   verifyTokenMiddlewares,
   getConnectionStatusController,

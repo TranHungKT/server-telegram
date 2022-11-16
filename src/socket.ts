@@ -59,7 +59,6 @@ export default class SocketServer {
 
     this.io.on('connection', (socket) => {
       socket.on('disconnect', () => {
-        console.log('disconnect', socket.data);
         this.handleSocketDisconnect(socket.data.userId);
       });
       socket.onAny(async (event, ...args) => {
@@ -229,6 +228,8 @@ export default class SocketServer {
 
   async handleSocketConnect(userId: string) {
     try {
+      console.log('connected user', userId);
+
       let connectedSocket: string[] | null = await getRedisValue(
         SOCKET_CONNECT_USERS,
       );
@@ -249,6 +250,8 @@ export default class SocketServer {
 
   async handleSocketDisconnect(userId: string) {
     try {
+      console.log('disconnected user', userId);
+
       const connectedSocket: string[] = await getRedisValue(
         SOCKET_CONNECT_USERS,
       );

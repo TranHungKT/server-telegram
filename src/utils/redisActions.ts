@@ -10,9 +10,8 @@ export const setRedisValue = (key: string, value: string) => {
 
 export const getRedisValue = async (key: string) => {
   try {
-    console.log('valuueueue');
     const value = await redisClient.get(key);
-    console.log('value', value);
+
     if (!value) {
       return null;
     }

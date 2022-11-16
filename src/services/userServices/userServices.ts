@@ -4,6 +4,7 @@ import { USER_NOT_EXIST } from '@Constants';
 import { IUser, UserModel } from '@Models';
 import { ConflictDatabaseError, DatabaseError } from '@Utils';
 
+import { facebookServices } from '../facebookServices/facebookServices';
 import { AddGroupIdToListUserPayload, IUserService } from './useServiceModels';
 
 class DefaultUserService implements IUserService {
@@ -64,6 +65,18 @@ class DefaultUserService implements IUserService {
     if (!user) {
       throw new ConflictDatabaseError(USER_NOT_EXIST);
     }
+    return user;
+  }
+
+  async findUserByToken(token: string): Promise<HydratedDocument<IUser>> {
+    const { id } = await facebookServices.getUserData(token);
+
+    const user = await userService.findUserByOAuthId(id);
+
+    if (!user) {
+      throw new ConflictDatabaseError(USER_NOT_EXIST);
+    }
+
     return user;
   }
 }

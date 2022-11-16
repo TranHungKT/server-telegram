@@ -9,3 +9,5 @@ export const SOCKET_EVENTS = {
   TYPING: 'typing',
   UN_TYPING: 'un-typing',
 };
+
+export const SOCKET_CONNECT_USERS = 'SOCKET_CONNECT_USERS';

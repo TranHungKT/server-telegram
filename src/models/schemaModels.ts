@@ -4,7 +4,6 @@ import { SCHEMA_NAME } from '@Constants';
 import { GroupSchema, MessageSchema, UserSchema } from '@Schemas';
 
 import { TypeOfGroup } from './groupModels';
-import { UserStatus } from './userModels';
 
 export interface IUser {
   oAuthId: string;
@@ -13,7 +12,6 @@ export interface IUser {
   lastName: string;
   avatarUrl: string;
   groupUserBelongTo: string[];
-  status: UserStatus;
 }
 
 export const UserModel = model<IUser>(SCHEMA_NAME.USER, UserSchema);

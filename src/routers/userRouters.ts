@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 
+import { getConnectionStatusController } from '@Controllers/userControllers/getConnectionStatusController';
 import { verifyTokenMiddlewares } from '@Middlewares';
 import { RequestUserAfterAuthenticate } from '@Models';
 
@@ -24,5 +25,11 @@ userRouters.get('/fail', (req, res) => {
 });
 
 userRouters.get('/user-data', verifyTokenMiddlewares, getBaseUserController);
+
+userRouters.post(
+  '/connect-status',
+  verifyTokenMiddlewares,
+  getConnectionStatusController,
+);
 
 export { userRouters };

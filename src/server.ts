@@ -10,10 +10,11 @@ import passport from 'passport';
 import { initDb } from '@Configs';
 import { CustomError } from '@Utils';
 
+import redisClient from './redis';
 import { routers } from './routers';
 import SocketServer from './socket';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 export default class App {
   private server: Express;
@@ -40,7 +41,7 @@ export default class App {
     this.server.use(passport.session());
 
     this.server.use(express.json());
-
+    await redisClient.connect();
     this.server.use(routers);
 
     this.server.use(

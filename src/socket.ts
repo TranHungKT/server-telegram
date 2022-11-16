@@ -22,8 +22,6 @@ import {
 
 import { MessageStatus } from './models/messageModels';
 
-export const connectedSocket: string[] = [];
-
 export default class SocketServer {
   private io: socket.Server<
     DefaultEventsMap,
@@ -36,8 +34,6 @@ export default class SocketServer {
     this.io = new socket.Server(expressServer, {
       path: '/socket',
       transports: ['websocket'],
-      pingTimeout: 10000,
-      pingInterval: 5000,
     });
   }
 
@@ -233,7 +229,6 @@ export default class SocketServer {
       let connectedSocket: string[] | null = await getRedisValue(
         SOCKET_CONNECT_USERS,
       );
-      console.log(connectedSocket);
 
       if (!connectedSocket) {
         setRedisValue(SOCKET_CONNECT_USERS, JSON.stringify([]));
@@ -257,12 +252,14 @@ export default class SocketServer {
         SOCKET_CONNECT_USERS,
       );
 
-      const index = connectedSocket.findIndex((id) => userId === id);
+      const removedDisconnectedUser = connectedSocket.filter(
+        (id) => userId !== id,
+      );
 
-      if (index !== -1) {
-        connectedSocket.splice(index, 1);
-        setRedisValue(SOCKET_CONNECT_USERS, JSON.stringify(connectedSocket));
-      }
+      setRedisValue(
+        SOCKET_CONNECT_USERS,
+        JSON.stringify(removedDisconnectedUser),
+      );
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.USER_NOT_EXIST);
     }

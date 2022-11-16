@@ -8,7 +8,6 @@ export const SOCKET_EVENTS = {
   SOCKET_ERROR: 'socket-error',
   TYPING: 'typing',
   UN_TYPING: 'un-typing',
-  HEART_BEAT: 'heart-beat',
 };
 
 export const SOCKET_CONNECT_USERS = 'SOCKET_CONNECT_USERS';

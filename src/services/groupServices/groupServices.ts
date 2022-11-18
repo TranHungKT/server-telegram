@@ -1,6 +1,7 @@
 import mongoose, { HydratedDocument } from 'mongoose';
 
 import { GROUP_ALREADY_EXIST, GROUP_NOT_EXIST } from '@Constants';
+import { GetFilesOfGroupPayload } from '@Controllers/groupControllers/helpers';
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
 import { GroupModel, IGroup, UserModel } from '@Models';
 import {
@@ -151,6 +152,32 @@ class DefaultGroupService implements IGroupService {
     } catch (error) {
       throw new DatabaseError();
     }
+  }
+
+  async getFilesOfGroup(payload: GetFilesOfGroupPayload): Promise<any> {
+    const { groupId } = payload;
+
+    const listOfMessages = await GroupModel.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(groupId) } },
+      { $unwind: '$messages' },
+      { $project: { messages: 1 } },
+      { $sort: { 'messages.lastUpdatedAt': -1 } },
+      {
+        $group: {
+          _id: '$_id',
+          messages: {
+            $push: {
+              _id: '$messages._id',
+              lastUpdatedAt: '$messages.lastUpdatedAt',
+            },
+          },
+        },
+      },
+    ]);
+
+    return await GroupModel.populate(listOfMessages, {
+      path: 'messages._id',
+    });
   }
 }
 

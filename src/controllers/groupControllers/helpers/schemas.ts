@@ -17,3 +17,9 @@ export const yupGetListOfGroupSchema = yup.object({
 });
 
 export type GetListGroupQuery = yup.Asserts<typeof yupGetListOfGroupSchema>;
+
+export const yupGetFilesOfGroup = yup.object({
+  groupId: yup.string().required(),
+});
+
+export type GetFilesOfGroupPayload = yup.Asserts<typeof yupGetFilesOfGroup>;

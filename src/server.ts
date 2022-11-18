@@ -41,7 +41,9 @@ export default class App {
     this.server.use(passport.session());
 
     this.server.use(express.json());
+
     await redisClient.connect();
+
     this.server.use(routers);
 
     this.server.use(

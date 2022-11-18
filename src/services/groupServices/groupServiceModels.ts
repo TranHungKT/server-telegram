@@ -1,5 +1,6 @@
 import { HydratedDocument, ObjectId } from 'mongoose';
 
+import { GetFilesOfGroupPayload } from '@Controllers/groupControllers/helpers';
 import { GetListMessagePayload } from '@Controllers/messageControllers/helpers/schema';
 import { IGroup, IMessageAfterPopulateUser } from '@Models';
 
@@ -42,4 +43,5 @@ export interface IGroupService {
     groupMessageBelongTo,
     messageId,
   }: AddMessageToGroupItBelongToPayload): Promise<void>;
+  getFilesOfGroup(payload: GetFilesOfGroupPayload): Promise<any>;
 }

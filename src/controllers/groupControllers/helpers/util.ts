@@ -4,11 +4,11 @@ export const normalizedResponseMessageImage = (
   messages: GetListMessagesResponse,
 ) => {
   return messages.messages
+    .filter((message) => message._id.image)
     .map((message) => {
-      if (message._id.image) {
-        return message._id.image;
-      }
-      return undefined;
-    })
-    .filter((message) => !!message);
+      return {
+        id: message._id._id,
+        image: message._id.image,
+      };
+    });
 };

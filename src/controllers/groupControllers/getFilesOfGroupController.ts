@@ -23,11 +23,7 @@ export const getFilesOfGroupController = async (
     });
 
     if (response.length === 0) {
-      res.status(200).send({
-        groupId: groupId,
-        count: 0,
-        list: [],
-      });
+      res.status(200).send([]);
     }
 
     const normalizedResponse = normalizedResponseMessageImage(response[0]);

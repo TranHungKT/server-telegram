@@ -108,6 +108,7 @@ export default class SocketServer {
         .to(payload.groupId)
         .emit(SOCKET_EVENTS.OFFER_FOR_CALL_EVENT, {
           offer: payload.offer,
+          groupId: payload.groupId,
         });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);

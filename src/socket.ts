@@ -81,6 +81,15 @@ export default class SocketServer {
             case SOCKET_EVENTS.SEEN_MESSAGE:
               await this.seenMessage({ ...payload, socket });
               break;
+            case SOCKET_EVENTS.OFFER_FOR_CALL_EVENT:
+              await this.offerCall(payload, socket);
+              break;
+            case SOCKET_EVENTS.ANSWER_FOR_CALL_EVENT:
+              await this.answerCall(payload, socket);
+              break;
+            case SOCKET_EVENTS.ICE_CANDIDATE_EVENT:
+              await this.handleIceCandidate(payload, socket);
+              break;
           }
         } catch (error) {
           console.log(error);
@@ -88,6 +97,52 @@ export default class SocketServer {
         }
       });
     });
+  }
+
+  async offerCall(
+    payload: { groupId: string; offer: any },
+    socket: socket.Socket,
+  ) {
+    try {
+      socket.broadcast
+        .to(payload.groupId)
+        .emit(SOCKET_EVENTS.OFFER_FOR_CALL_EVENT, {
+          offer: payload.offer,
+          groupId: payload.groupId,
+        });
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  async answerCall(
+    payload: { groupId: string; answer: any },
+    socket: socket.Socket,
+  ) {
+    try {
+      socket.broadcast
+        .to(payload.groupId)
+        .emit(SOCKET_EVENTS.ANSWER_FOR_CALL_EVENT, {
+          answer: payload.answer,
+        });
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  async handleIceCandidate(
+    payload: { groupId: string; iceCandidate: any },
+    socket: socket.Socket,
+  ) {
+    try {
+      socket.broadcast
+        .to(payload.groupId)
+        .emit(SOCKET_EVENTS.ICE_CANDIDATE_EVENT, {
+          iceCandidate: payload.iceCandidate,
+        });
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
+    }
   }
 
   async handleSocketError(error: SocketError, socketId: string) {

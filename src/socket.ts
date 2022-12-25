@@ -90,6 +90,9 @@ export default class SocketServer {
             case SOCKET_EVENTS.ICE_CANDIDATE_EVENT:
               await this.handleIceCandidate(payload, socket);
               break;
+            case SOCKET_EVENTS.HANG_UP_EVENT:
+              await this.hangUpCall(payload, socket);
+              break;
           }
         } catch (error) {
           console.log(error);
@@ -100,7 +103,7 @@ export default class SocketServer {
   }
 
   async offerCall(
-    payload: { groupId: string; offer: any },
+    payload: { groupId: string; offer: any; callerId: string },
     socket: socket.Socket,
   ) {
     try {
@@ -109,7 +112,16 @@ export default class SocketServer {
         .emit(SOCKET_EVENTS.OFFER_FOR_CALL_EVENT, {
           offer: payload.offer,
           groupId: payload.groupId,
+          callerId: payload.callerId,
         });
+    } catch (error) {
+      throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  async hangUpCall(payload: { groupId: string }, socket: socket.Socket) {
+    try {
+      socket.broadcast.to(payload.groupId).emit(SOCKET_EVENTS.HANG_UP_EVENT);
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);
     }
@@ -124,6 +136,7 @@ export default class SocketServer {
         .to(payload.groupId)
         .emit(SOCKET_EVENTS.ANSWER_FOR_CALL_EVENT, {
           answer: payload.answer,
+          groupId: payload.groupId,
         });
     } catch (error) {
       throw new SocketError(SOCKET_ERROR_TYPE.SOMETHING_WENT_WRONG);

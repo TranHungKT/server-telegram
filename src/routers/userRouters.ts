@@ -1,11 +1,14 @@
 import express from 'express';
 import passport from 'passport';
 
-import { getConnectionStatusController } from '@Controllers/userControllers/getConnectionStatusController';
 import { verifyTokenMiddlewares } from '@Middlewares';
 import { RequestUserAfterAuthenticate } from '@Models';
 
-import { getBaseUserController } from '../controllers/userControllers';
+import {
+  getBaseUserController,
+  getConnectionStatusController,
+  getUserDataController,
+} from '../controllers/userControllers';
 import '../controllers/userControllers/userController';
 
 const userRouters = express.Router();
@@ -24,12 +27,18 @@ userRouters.get('/fail', (req, res) => {
   res.send('Failed attempt');
 });
 
-userRouters.get('/user-data', verifyTokenMiddlewares, getBaseUserController);
+userRouters.get('/current-user', verifyTokenMiddlewares, getBaseUserController);
 
 userRouters.post(
   '/connect-status',
   verifyTokenMiddlewares,
   getConnectionStatusController,
+);
+
+userRouters.get(
+  '/user-data/:id',
+  verifyTokenMiddlewares,
+  getUserDataController,
 );
 
 export { userRouters };

@@ -7,3 +7,9 @@ export const yupGetConnectionStatusSchema = yup.object({
 export type GetConnectionStatusPayload = yup.Asserts<
   typeof yupGetConnectionStatusSchema
 >;
+
+export const yupGetUserDataSchema = yup.object({
+  id: yup.string().required(),
+});
+
+export type GetUserDataPayload = yup.Asserts<typeof yupGetUserDataSchema>;

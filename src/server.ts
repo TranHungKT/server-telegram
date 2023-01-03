@@ -10,9 +10,9 @@ import passport from 'passport';
 import { initDb } from '@Configs';
 import { CustomError } from '@Utils';
 
+import SocketServer from './controllers/socketControllers/socket';
 import redisClient from './redis';
 import { routers } from './routers';
-import SocketServer from './socket';
 
 const PORT = process.env.PORT || 3001;
 

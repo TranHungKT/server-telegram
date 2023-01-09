@@ -179,6 +179,14 @@ class DefaultGroupService implements IGroupService {
       path: 'messages._id',
     });
   }
+
+  async deleteGroupById(groupId: string): Promise<void> {
+    try {
+      await GroupModel.deleteOne({ _id: groupId });
+    } catch (error) {
+      throw new ConflictDatabaseError('Can not delete group');
+    }
+  }
 }
 
 export const groupServices = new DefaultGroupService();

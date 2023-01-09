@@ -13,4 +13,11 @@ export interface IUserService {
   addGroupIdToListUser(payload: AddGroupIdToListUserPayload): Promise<void>;
   findUserByOAuthId(id: string): Promise<IUser>;
   findUserById(id: string): Promise<HydratedDocument<IUser>>;
+  deleteGroupUserBelongTo({
+    userIds,
+    groupId,
+  }: {
+    userIds: string[];
+    groupId: string;
+  }): Promise<void>;
 }

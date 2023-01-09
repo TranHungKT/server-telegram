@@ -7,13 +7,7 @@ export const basicController = async (
   next: NextFunction,
 ) => {
   try {
-    // validateRequest()
-    console.log('Validate');
-  } catch (error) {
-    return next(error);
-  }
-
-  try {
+    // await validateRequest()
     res.send('OK');
   } catch (error) {
     return next(error);

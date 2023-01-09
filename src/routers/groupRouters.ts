@@ -2,6 +2,7 @@ import express from 'express';
 
 import {
   createNewGroupController,
+  deleteGroupController,
   getFilesOfGroupController,
   getListGroupsController,
 } from '@Controllers/groupControllers/';
@@ -25,6 +26,12 @@ groupRouters.get(
   '/get-list-images',
   verifyTokenMiddlewares,
   getFilesOfGroupController,
+);
+
+groupRouters.delete(
+  '/delete-group',
+  verifyTokenMiddlewares,
+  deleteGroupController,
 );
 
 export { groupRouters };

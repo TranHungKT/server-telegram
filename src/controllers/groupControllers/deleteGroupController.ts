@@ -28,7 +28,7 @@ export const deleteGroupController = async (
     await messageService.deleteMessagesByIds({
       messageIds: map(group.messages, '_id'),
     });
-    return res.status(204);
+    return res.status(204).send();
   } catch (error) {
     return next(error);
   }

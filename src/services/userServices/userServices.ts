@@ -79,6 +79,27 @@ class DefaultUserService implements IUserService {
 
     return user;
   }
+
+  async deleteGroupUserBelongTo({
+    userIds,
+    groupId,
+  }: {
+    userIds: string[];
+    groupId: string;
+  }): Promise<void> {
+    try {
+      userIds.forEach(async (userId) => {
+        const user = await UserModel.findById(userId);
+
+        user?.groupUserBelongTo.filter(
+          (currentGroupId) => currentGroupId !== groupId,
+        );
+        user?.save();
+      });
+    } catch (error) {
+      throw new DatabaseError();
+    }
+  }
 }
 
 export const userService = new DefaultUserService();

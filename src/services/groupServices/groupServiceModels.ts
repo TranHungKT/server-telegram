@@ -44,4 +44,5 @@ export interface IGroupService {
     messageId,
   }: AddMessageToGroupItBelongToPayload): Promise<void>;
   getFilesOfGroup(payload: GetFilesOfGroupPayload): Promise<any>;
+  deleteGroupById(groupId: string): Promise<void>;
 }

@@ -23,3 +23,9 @@ export const yupGetFilesOfGroup = yup.object({
 });
 
 export type GetFilesOfGroupPayload = yup.Asserts<typeof yupGetFilesOfGroup>;
+
+export const yupDeleteGroup = yup.object({
+  groupId: yup.string().required(),
+});
+
+export type DeleteGroupQuery = yup.Asserts<typeof yupDeleteGroup>;

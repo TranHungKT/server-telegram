@@ -29,4 +29,6 @@ export interface IMessageService {
     messageId: string;
     status: MessageStatus;
   }): Promise<HydratedDocument<IMessage>>;
+
+  deleteMessagesByIds({ messageIds }: { messageIds: string[] }): Promise<void>;
 }

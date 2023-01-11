@@ -2,7 +2,7 @@ import { HydratedDocument } from 'mongoose';
 
 import { CAN_NOT_FIND_MESSAGE } from '@Constants';
 import { GroupModel, IMessage, MessageModel, MessageStatus } from '@Models';
-import { DatabaseError } from '@Utils';
+import { ConflictDatabaseError, DatabaseError } from '@Utils';
 
 import {
   AddMessageToGroupItBelongToPayload,
@@ -65,6 +65,22 @@ export class DefaultMessageService implements IMessageService {
       throw new Error(CAN_NOT_FIND_MESSAGE);
     } catch (error) {
       throw new DatabaseError();
+    }
+  }
+
+  async deleteMessagesByIds({
+    messageIds,
+  }: {
+    messageIds: string[];
+  }): Promise<void> {
+    try {
+      await MessageModel.deleteMany({
+        $in: {
+          messageIds,
+        },
+      });
+    } catch (error) {
+      throw new ConflictDatabaseError('Can not delete messages');
     }
   }
 }

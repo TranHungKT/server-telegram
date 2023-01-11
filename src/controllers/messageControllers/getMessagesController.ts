@@ -42,7 +42,7 @@ export const getMessagesController = async (
     });
 
     if (response.length === 0) {
-      res.status(200).send({
+      return res.status(200).send({
         groupId: groupId,
         count: 0,
         list: [],

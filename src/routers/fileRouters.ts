@@ -1,4 +1,5 @@
 import express from 'express';
+import { map } from 'lodash';
 
 import { verifyTokenMiddlewares } from '@Middlewares';
 
@@ -9,9 +10,11 @@ const fileRouters = express.Router();
 fileRouters.post(
   '/upload-image',
   verifyTokenMiddlewares,
-  uploadServer.upload.single('photos'),
+  uploadServer.upload.array('photos'),
   (req, res) => {
-    return res.status(200).send({ fileUrl: (req.file as any).location });
+    return res
+      .status(200)
+      .send({ fileUrls: map(req.files as any, 'location') });
   },
 );
 

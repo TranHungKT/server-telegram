@@ -16,6 +16,7 @@ export const normalizedResponseMessage = (
         pending,
         seen,
         image,
+        listImages,
       } = message._id;
 
       return {
@@ -27,7 +28,8 @@ export const normalizedResponseMessage = (
         received,
         pending,
         seen,
-        image,
+        image: image,
+        listImages: listImages,
       };
     });
   }

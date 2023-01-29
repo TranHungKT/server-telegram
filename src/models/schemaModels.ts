@@ -38,6 +38,7 @@ export interface IMessage {
   pending?: boolean;
   seen?: boolean;
   image?: string;
+  listImages?: string[];
 }
 
 export const MessageModel = model<IMessage>(SCHEMA_NAME.MESSAGE, MessageSchema);

@@ -34,7 +34,7 @@ export default class UploadServer {
           cb(null, { fieldName: file.fieldname });
         },
         key: function (req, file, cb) {
-          cb(null, `pictures/${Date.now().toString()}`);
+          cb(null, `pictures/${Date.now().toString()}${file.originalname}`);
         },
       }),
     });
